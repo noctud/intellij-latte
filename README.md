@@ -16,7 +16,7 @@ If you have any problems with the plugin, [create an issue](https://github.com/n
 
 Notice
 ------------
-This plugin is a fork of the [original free plugin](https://github.com/nette-intellij/intellij-latte) and it is in maintenance mode only (but feel free to contribute new features), errors and performance issues will still be fixed and updates will be on time. This fork has been created as another free plugin, since the code completion feature was removed from the original free plugin.
+This plugin is a fork of the [original free plugin](https://github.com/nette-intellij/intellij-latte). This fork has been created as another free plugin, since the code completion feature was removed from the original free plugin.
 
 
 Installation
