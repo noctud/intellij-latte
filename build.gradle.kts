@@ -100,34 +100,34 @@ qodana {
 }
 
 val generateLatteParser = tasks.register<GenerateParserTask>("generateLatteParser") {
-    sourceFile = File("src/main/java/org/nette/latte/parser/LatteParser.bnf")
+    sourceFile = File("src/main/java/dev/noctud/latte/parser/LatteParser.bnf")
     targetRootOutputDir = File("src/main/gen")
-    pathToParser = "/org/nette/latte/parser/LatteParser.java"
-    pathToPsiRoot = "/org/nette/latte/psi"
+    pathToParser = "/dev/noctud/latte/parser/LatteParser.java"
+    pathToPsiRoot = "/dev/noctud/latte/psi"
     purgeOldFiles = false
 }
 
 val generateLatteMacroContentLexer = tasks.register<GenerateLexerTask>("generateLatteMacroContentLexer") {
-    sourceFile = File("src/main/java/org/nette/latte/lexer/grammars/LatteMacroContentLexer.flex")
-    targetOutputDir = File("src/main/gen/org/nette/latte/lexer")
+    sourceFile = File("src/main/java/dev/noctud/latte/lexer/grammars/LatteMacroContentLexer.flex")
+    targetOutputDir = File("src/main/gen/dev/noctud/latte/lexer")
     purgeOldFiles = false
 }
 
 val generateLatteMacroLexer = tasks.register<GenerateLexerTask>("generateLatteMacroLexer") {
-    sourceFile = File("src/main/java/org/nette/latte/lexer/grammars/LatteMacroLexer.flex")
-    targetOutputDir = File("src/main/gen/org/nette/latte/lexer")
+    sourceFile = File("src/main/java/dev/noctud/latte/lexer/grammars/LatteMacroLexer.flex")
+    targetOutputDir = File("src/main/gen/dev/noctud/latte/lexer")
     purgeOldFiles = false
 }
 
 val generateLatteTopLexer = tasks.register<GenerateLexerTask>("generateLatteTopLexer") {
-    sourceFile = File("src/main/java/org/nette/latte/lexer/grammars/LatteTopLexer.flex")
-    targetOutputDir = File("src/main/gen/org/nette/latte/lexer")
+    sourceFile = File("src/main/java/dev/noctud/latte/lexer/grammars/LatteTopLexer.flex")
+    targetOutputDir = File("src/main/gen/dev/noctud/latte/lexer")
     purgeOldFiles = false
 }
 
 val generateLattePhpLexer = tasks.register<GenerateLexerTask>("generateLattePhpLexer") {
-    sourceFile = File("src/main/java/org/nette/latte/lexer/grammars/LattePhpLexer.flex")
-    targetOutputDir = File("src/main/gen/org/nette/latte/lexer")
+    sourceFile = File("src/main/java/dev/noctud/latte/lexer/grammars/LattePhpLexer.flex")
+    targetOutputDir = File("src/main/gen/dev/noctud/latte/lexer")
     purgeOldFiles = false
 }
 

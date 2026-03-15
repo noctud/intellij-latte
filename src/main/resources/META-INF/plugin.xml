@@ -1,7 +1,7 @@
 <idea-plugin>
 	<id>org.nette.latte</id>
 	<name>Latte Support</name>
-	<vendor>Nette Community</vendor>
+	<vendor>Noctud.dev</vendor>
 
 	<!-- http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges -->
 	<idea-version/>
@@ -12,84 +12,84 @@
 
 	<extensions defaultExtensionNs="com.intellij">
 
-		<fileType name="Latte" implementationClass="org.nette.latte.LatteFileType" fieldName="INSTANCE"
-				  language="Latte" extensions="latte" />
+		<fileType name="Latte" implementationClass="dev.noctud.latte.LatteFileType" fieldName="INSTANCE"
+                  language="Latte" extensions="latte" />
 
-		<projectService serviceImplementation="org.nette.latte.settings.LatteSettings"/>
+		<projectService serviceImplementation="dev.noctud.latte.settings.LatteSettings"/>
 
-		<lang.commenter language="Latte" implementationClass="org.nette.latte.commenter.LatteCommenter"/>
-		<lang.parserDefinition language="Latte" implementationClass="org.nette.latte.parser.LatteParserDefinition"/>
-		<lang.syntaxHighlighterFactory language="Latte" implementationClass="org.nette.latte.syntaxHighlighter.LatteSyntaxHighlighterFactory"/>
-		<lang.foldingBuilder language="Latte" implementationClass="org.nette.latte.folding.LatteFoldingBuilder"/>
-		<lang.fileViewProviderFactory language="Latte" implementationClass="org.nette.latte.psi.LatteFileViewProviderFactory"/>
-		<lang.formatter language="Latte" implementationClass="org.nette.latte.formatter.LatteFormattingModelBuilder"/>
-		<colorSettingsPage implementation="org.nette.latte.syntaxHighlighter.LatteColorSettingsPage"/>
-		<lang.quoteHandler language="Latte" implementationClass="org.nette.latte.editorActions.LatteQuoteHandler"/>
-		<annotator language="Latte" implementationClass="org.nette.latte.annotator.LatteAnnotator"/>
-		<typedHandler implementation="org.nette.latte.editorActions.LatteTypedHandler"/>
-		<typedHandler implementation="org.nette.latte.editorActions.LatteCompletionAutoPopupHandler"/>
-		<typedHandler implementation="org.nette.latte.completion.LatteTypedHandler"/>
-		<lang.braceMatcher language="Latte" implementationClass="org.nette.latte.reference.LatteBraceMatcher"/>
-		<indexPatternBuilder implementation="org.nette.latte.psi.LatteIndexPatternBuilder"/>
-		<highlightErrorFilter implementation="org.nette.latte.psi.ErrorFilter"/>
-		<lang.psiStructureViewFactory language="Latte" implementationClass="org.nette.latte.editor.LatteStructureViewFactory"/>
-		<lang.findUsagesProvider language="Latte" implementationClass="org.nette.latte.reference.LatteFindUsagesProvider"/>
-		<psi.referenceContributor implementation="org.nette.latte.reference.LatteReferenceContributor"/>
-		<codeStyleSettingsProvider implementation="org.nette.latte.codeStyle.LatteCodeStyleSettingsProvider"/>
-		<langCodeStyleSettingsProvider implementation="org.nette.latte.codeStyle.LatteLanguageCodeStyleSettingsProvider"/>
-		<lang.documentationProvider language="Latte" implementationClass="org.nette.latte.documentation.LatteDocumentationProvider"/>
+		<lang.commenter language="Latte" implementationClass="dev.noctud.latte.commenter.LatteCommenter"/>
+		<lang.parserDefinition language="Latte" implementationClass="dev.noctud.latte.parser.LatteParserDefinition"/>
+		<lang.syntaxHighlighterFactory language="Latte" implementationClass="dev.noctud.latte.syntaxHighlighter.LatteSyntaxHighlighterFactory"/>
+		<lang.foldingBuilder language="Latte" implementationClass="dev.noctud.latte.folding.LatteFoldingBuilder"/>
+		<lang.fileViewProviderFactory language="Latte" implementationClass="dev.noctud.latte.psi.LatteFileViewProviderFactory"/>
+		<lang.formatter language="Latte" implementationClass="dev.noctud.latte.formatter.LatteFormattingModelBuilder"/>
+		<colorSettingsPage implementation="dev.noctud.latte.syntaxHighlighter.LatteColorSettingsPage"/>
+		<lang.quoteHandler language="Latte" implementationClass="dev.noctud.latte.editorActions.LatteQuoteHandler"/>
+		<annotator language="Latte" implementationClass="dev.noctud.latte.annotator.LatteAnnotator"/>
+		<typedHandler implementation="dev.noctud.latte.editorActions.LatteTypedHandler"/>
+		<typedHandler implementation="dev.noctud.latte.editorActions.LatteCompletionAutoPopupHandler"/>
+		<typedHandler implementation="dev.noctud.latte.completion.LatteTypedHandler"/>
+		<lang.braceMatcher language="Latte" implementationClass="dev.noctud.latte.reference.LatteBraceMatcher"/>
+		<indexPatternBuilder implementation="dev.noctud.latte.psi.LatteIndexPatternBuilder"/>
+		<highlightErrorFilter implementation="dev.noctud.latte.psi.ErrorFilter"/>
+		<lang.psiStructureViewFactory language="Latte" implementationClass="dev.noctud.latte.editor.LatteStructureViewFactory"/>
+		<lang.findUsagesProvider language="Latte" implementationClass="dev.noctud.latte.reference.LatteFindUsagesProvider"/>
+		<psi.referenceContributor implementation="dev.noctud.latte.reference.LatteReferenceContributor"/>
+		<codeStyleSettingsProvider implementation="dev.noctud.latte.codeStyle.LatteCodeStyleSettingsProvider"/>
+		<langCodeStyleSettingsProvider implementation="dev.noctud.latte.codeStyle.LatteLanguageCodeStyleSettingsProvider"/>
+		<lang.documentationProvider language="Latte" implementationClass="dev.noctud.latte.documentation.LatteDocumentationProvider"/>
 
 		<!-- must have -->
-		<completion.contributor language="Latte" implementationClass="org.nette.latte.completion.LatteCompletionContributor"/>
-		<renamePsiElementProcessor implementation="org.nette.latte.refactoring.LatteRenamePsiElementProcessor"/>
-		<lang.smartEnterProcessor implementationClass="org.nette.latte.editor.LatteSmartEnterProcessor" />
+		<completion.contributor language="Latte" implementationClass="dev.noctud.latte.completion.LatteCompletionContributor"/>
+		<renamePsiElementProcessor implementation="refactoring.dev.noctud.latte.LatteRenamePsiElementProcessor"/>
+		<lang.smartEnterProcessor implementationClass="dev.noctud.latte.editor.LatteSmartEnterProcessor" />
 
-		<referencesSearch implementation="org.nette.latte.reference.LatteReferenceSearch"/>
-		<implicitUsageProvider implementation="org.nette.latte.reference.LatteImplicitUsageProvider"/>
+		<referencesSearch implementation="dev.noctud.latte.reference.LatteReferenceSearch"/>
+		<implicitUsageProvider implementation="dev.noctud.latte.reference.LatteImplicitUsageProvider"/>
 
-		<stubElementTypeHolder class="org.nette.latte.psi.LatteTypes" externalIdPrefix="latte."/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LatteFilterIndex"/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LattePhpClassIndex"/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LattePhpConstantIndex"/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LattePhpMethodIndex"/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LattePhpNamespaceIndex"/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LattePhpPropertyIndex"/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LattePhpStaticVariableIndex"/>
-		<stubIndex implementation="org.nette.latte.indexes.extensions.LattePhpTypeIndex"/>
+		<stubElementTypeHolder class="dev.noctud.latte.psi.LatteTypes" externalIdPrefix="latte."/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LatteFilterIndex"/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LattePhpClassIndex"/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LattePhpConstantIndex"/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LattePhpMethodIndex"/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LattePhpNamespaceIndex"/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LattePhpPropertyIndex"/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LattePhpStaticVariableIndex"/>
+		<stubIndex implementation="dev.noctud.latte.indexes.extensions.LattePhpTypeIndex"/>
 
 		<defaultLiveTemplates file="/liveTemplates/Latte.xml"/>
-		<liveTemplateContext contextId="LATTE" implementation="org.nette.latte.liveTemplates.LatteTemplateContext"/>
-		<liveTemplatePreprocessor implementation="org.nette.latte.liveTemplates.LatteTemplatePreprocessor"/>
+		<liveTemplateContext contextId="LATTE" implementation="dev.noctud.latte.liveTemplates.LatteTemplateContext"/>
+		<liveTemplatePreprocessor implementation="dev.noctud.latte.liveTemplates.LatteTemplatePreprocessor"/>
 
-		<projectConfigurable instance="org.nette.latte.ui.LatteSettingsForm"
+		<projectConfigurable instance="dev.noctud.latte.ui.LatteSettingsForm"
 							 displayName="Latte"
 							 parentId="reference.webide.settings.project.settings.php"
 							 id="Latte.LatteSettingsForm"
 							 nonDefaultProject="true"
 		/>
 
-		<projectConfigurable instance="org.nette.latte.ui.LatteCustomMacroSettingsForm"
+		<projectConfigurable instance="dev.noctud.latte.ui.LatteCustomMacroSettingsForm"
 							 displayName="Tags"
 							 parentId="Latte.LatteSettingsForm"
 							 id="Latte.LatteCustomMacroSettingsForm"
 							 nonDefaultProject="true"
 		/>
 
-		<projectConfigurable instance="org.nette.latte.ui.LatteCustomModifierSettingsForm"
+		<projectConfigurable instance="dev.noctud.latte.ui.LatteCustomModifierSettingsForm"
 							 displayName="Filters"
 							 parentId="Latte.LatteSettingsForm"
 							 id="Latte.LatteCustomModifierSettingsForm"
 							 nonDefaultProject="true"
 		/>
 
-		<projectConfigurable instance="org.nette.latte.ui.LatteCustomFunctionSettingsForm"
+		<projectConfigurable instance="dev.noctud.latte.ui.LatteCustomFunctionSettingsForm"
 							 displayName="Functions"
 							 parentId="Latte.LatteSettingsForm"
 							 id="Latte.LatteCustomFunctionSettingsForm"
 							 nonDefaultProject="true"
 		/>
 
-		<projectConfigurable instance="org.nette.latte.ui.LatteVariableSettingsForm"
+		<projectConfigurable instance="dev.noctud.latte.ui.LatteVariableSettingsForm"
 							 displayName="Variables"
 							 parentId="Latte.LatteSettingsForm"
 							 id="Latte.LatteVariableSettingsForm"
@@ -99,72 +99,72 @@
 		<localInspection language="Latte" shortName="ModifierNotAllowed" id="ModifierNotAllowed"
 						 displayName="Modifier not allowed"
 						 groupName="Latte" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.nette.latte.inspections.ModifierNotAllowedInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.ModifierNotAllowedInspection"/>
 
 		<localInspection language="Latte" shortName="LatteModifierDefinition" id="LatteModifierDefinition"
 						 displayName="Modifier definition"
 						 groupName="Latte" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.nette.latte.inspections.ModifierDefinitionInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.ModifierDefinitionInspection"/>
 
 		<localInspection language="Latte" shortName="DeprecatedTag" id="DeprecatedTag"
 						 displayName="Deprecated tag"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.DeprecatedTagInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.DeprecatedTagInspection"/>
 
 		<localInspection language="Latte" shortName="LatteVariablesProblems" id="LatteVariablesProblems"
 						 displayName="Variables problems"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.VariablesInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.VariablesInspection"/>
 
 		<localInspection language="Latte" shortName="LatteClassUsages" id="LatteClassUsages"
 						 displayName="Class usages"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.ClassUsagesInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.ClassUsagesInspection"/>
 
 		<localInspection language="Latte" shortName="LatteMethodUsages" id="LatteMethodUsages"
 						 displayName="Method usages"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.MethodUsagesInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.MethodUsagesInspection"/>
 
 		<localInspection language="Latte" shortName="StaticPropertyUsages" id="StaticPropertyUsages"
 						 displayName="Static property usages"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.StaticPropertyUsagesInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.StaticPropertyUsagesInspection"/>
 
 		<localInspection language="Latte" shortName="LatteConstantUsages" id="LatteConstantUsages"
 						 displayName="Constant usages"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.ConstantUsagesInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.ConstantUsagesInspection"/>
 
 		<localInspection language="Latte" shortName="LattePropertyUsages" id="LattePropertyUsages"
 						 displayName="Property usages"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.PropertyUsagesInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.PropertyUsagesInspection"/>
 
 		<localInspection language="Latte" shortName="LatteTemplateType" id="LatteTemplateType"
 						 displayName="Template type"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.MacroTemplateTypeInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.MacroTemplateTypeInspection"/>
 
 		<localInspection language="Latte" shortName="LatteVarType" id="LatteVarType"
 						 displayName="Var type"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.MacroVarTypeInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.MacroVarTypeInspection"/>
 
 		<localInspection language="Latte" shortName="LatteTagVar" id="LatteTagVar"
 						 displayName="Var definition"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.MacroVarInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.MacroVarInspection"/>
 
 		<localInspection language="Latte" shortName="LatteIterableType" id="LatteIterableType"
 						 displayName="Latte iterable types"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.LatteIterableTypeInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.LatteIterableTypeInspection"/>
 
 		<localInspection language="Latte" shortName="LatteMissingFile" id="LatteMissingFile"
 						 displayName="Missing files in macros like import/include"
 						 groupName="Latte" enabledByDefault="true"
-						 implementationClass="org.nette.latte.inspections.MissingFileInspection"/>
+						 implementationClass="dev.noctud.latte.inspections.MissingFileInspection"/>
 	</extensions>
 
 	<application-components>

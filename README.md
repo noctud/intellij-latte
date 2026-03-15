@@ -1,9 +1,14 @@
-Latte Support for PhpStorm
+Latte for PhpStorm and IntelliJ Idea
 =========================================
+[![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/24218-latte-support.svg?label=marketplace)](https://plugins.jetbrains.com/plugin/24218-latte-support)
+[![Build](https://img.shields.io/github/actions/workflow/status/noctud/intellij-latte/build.yaml?branch=main)](https://github.com/noctud/intellij-latte/actions)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+[![Discord](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/jS3fKe6vW9)
 
 <!-- Plugin description -->
-Fork of the [original free plugin](https://github.com/nette-intellij/intellij-latte), provides decent support for [Latte](https://latte.nette.org) templates.
+Provides comprehensive support for the [Latte](https://latte.nette.org) templating engine in PhpStorm and IntelliJ IDEA. Includes syntax highlighting, code completion for PHP expressions inside templates, type-aware references to classes, methods, and properties via [{templateType}](https://latte.nette.org/type-system#toc-templatetype), refactoring across Latte and PHP files, live inspections for undefined variables, missing files, deprecated tags, and more. Supports custom tags, filters, and functions configuration per project.
 
+If you have any problems with the plugin, [create an issue](https://github.com/noctud/intellij-latte/issues/new/choose) or join the [Noctud Discord](https://discord.gg/jS3fKe6vW9).
 <!-- Plugin description end -->
 
 ![example](https://i.imgur.com/KjIAx90.gif)
@@ -11,9 +16,7 @@ Fork of the [original free plugin](https://github.com/nette-intellij/intellij-la
 
 Notice
 ------------
-This plugin is in maintenance mode only (but feel free to contribute new features), errors and performance issues will still be fixed and updates will be on time, if you are looking for a plugin with more features, check out paid [Latte Pro](https://plugins.jetbrains.com/plugin/19661-latte-pro) plugin. This fork has been created as another free plugin, since code completion feature was removed from the original free plugin.
-
-If you have any problems with the plugin, [create an issue](https://github.com/Rixafy/LatteSupport/issues/new/choose) or use #latte channel at the [Nette Discord](https://discord.gg/azXxTbuQVq).
+This plugin is a fork of the [original free plugin](https://github.com/nette-intellij/intellij-latte) and it is in maintenance mode only (but feel free to contribute new features), errors and performance issues will still be fixed and updates will be on time. This fork has been created as another free plugin, since the code completion feature was removed from the original free plugin.
 
 
 Installation
@@ -23,28 +26,34 @@ Settings → Plugins → Browse repositories → Find "Latte Support" → Instal
 
 Installation from .jar file
 ------------
-Download `instrumented.jar` file from [latest release](https://github.com/Rixafy/LatteSupport/releases) or latest successful [GitHub Actions build](https://github.com/Rixafy/LatteSupport/actions)
+Download the `instrumented.jar` file from the [latest release](https://github.com/noctud/intellij-latte/releases) or the latest successful [GitHub Actions build](https://github.com/noctud/intellij-latte/actions)
 
 
 Supported Features
 ------------------
 
-* Syntax highlighting and code completion for `PHP` in `Latte` files
-* Type support and reference to classes and methods in `Latte` files (see [{templateType}](https://latte.nette.org/type-system#toc-templatetype))
-* Refactoring support for `Latte` files (when changing class name, method name, etc.)
-* Live analysis of `Latte` files (unused variables, syntax errors, etc.)
+* Syntax highlighting and code completion for PHP in Latte files
+* Type-aware references to classes, methods, properties, and constants (via [{templateType}](https://latte.nette.org/type-system#toc-templatetype))
+* Link references between `{link}` macros and presenter action methods
+* Control component references from `{control}` tags to registered components
+* File path references and missing file detection in `{include}` and `{import}` macros
+* Refactoring support (rename classes, methods, variables across Latte and PHP)
+* Live inspections (undefined variables, unknown classes/methods, deprecated tags, modifier issues, iterable types)
+* Code folding, brace matching, and structure view
+* Configurable custom tags, filters, functions, and variables per project
+* Live templates for common Latte constructs
 
 
 Building
 ------------
 
-```$xslt
-$ ./gradlew buildPlugin
+```sh
+./gradlew buildPlugin
 ```
 
 Testing in dummy IDE
 ------------
 
-```$xslt
-$ ./gradlew runide
+```sh
+./gradlew runide
 ```
