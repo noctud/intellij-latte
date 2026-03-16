@@ -3,12 +3,12 @@ Latte for PhpStorm and IntelliJ Idea
 [![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/24218-latte-support.svg?label=marketplace)](https://plugins.jetbrains.com/plugin/24218-latte-support)
 [![Build](https://img.shields.io/github/actions/workflow/status/noctud/intellij-latte/build.yaml?branch=main)](https://github.com/noctud/intellij-latte/actions)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-[![Discord](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/jS3fKe6vW9)
+[![Discord](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.noctud.dev)
 
 <!-- Plugin description -->
 Provides comprehensive support for the [Latte](https://latte.nette.org) templating engine in PhpStorm and IntelliJ IDEA. Includes syntax highlighting, code completion for PHP expressions inside templates, type-aware references to classes, methods, and properties via [{templateType}](https://latte.nette.org/type-system#toc-templatetype), refactoring across Latte and PHP files, live inspections for undefined variables, missing files, deprecated tags, and more. Supports custom tags, filters, and functions configuration per project.
 
-If you have any problems with the plugin, [create an issue](https://github.com/noctud/intellij-latte/issues/new/choose) or join the [Noctud Discord](https://discord.gg/jS3fKe6vW9).
+If you have any problems with the plugin, [create an issue](https://github.com/noctud/intellij-latte/issues/new/choose) or join the [Noctud Discord](https://discord.noctud.dev).
 <!-- Plugin description end -->
 
 ![example](https://i.imgur.com/KjIAx90.gif)
@@ -51,9 +51,9 @@ Building
 ./gradlew buildPlugin
 ```
 
-Testing in dummy IDE
+Testing in sandbox IDE
 ------------
 
 ```sh
-./gradlew runide
+./gradlew runIde
 ```
