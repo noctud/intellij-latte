@@ -115,4 +115,9 @@ public class ParserTest extends BasePsiParsingTestCase {
         doTest(true, true);
     }
 
+    @Test
+    public void testDeeplyNested() {
+        doTest(true, true);
+    }
+
 }

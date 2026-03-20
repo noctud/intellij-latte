@@ -10,6 +10,7 @@
 - Type detection for typed variable definitions (e.g. `{define input, float $name}`)
 - Lexer handling of PHP closures inside latte tags (`function() { }`)
 - Type compatibility check for union types at different depths
+- Deeply nested blocks/snippets producing errors on closing tags
 
 ### Changed
 

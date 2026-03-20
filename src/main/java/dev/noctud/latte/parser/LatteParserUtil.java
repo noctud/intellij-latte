@@ -129,9 +129,17 @@ public class LatteParserUtil extends GeneratedParserUtilBase {
             builder.advanceLexer();
             type = builder.getTokenType();
         }
+        int depth = 0;
         while (type != null) {
             if (nextTokenIsFast(builder, LatteTypes.T_MACRO_CLOSE_TAG_OPEN, LatteTypes.T_MACRO_OPEN_TAG_OPEN) && getMacroName(builder).equals(macroName)) {
-                return type == LatteTypes.T_MACRO_CLOSE_TAG_OPEN;
+                if (type == LatteTypes.T_MACRO_CLOSE_TAG_OPEN) {
+                    if (depth == 0) {
+                        return true;
+                    }
+                    depth--;
+                } else {
+                    depth++;
+                }
             } else if (type == LatteTypes.T_HTML_TAG_NATTR_NAME && ("n:" + macroName).equals(builder.getTokenText())) {
                 builder.advanceLexer();
                 type = builder.getTokenType();

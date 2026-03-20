@@ -1,0 +1,31 @@
+{block content}
+<div>
+    {snippet header}
+    <header>
+        {block navigation}
+        <nav>
+            {foreach $items as $item}
+            <div>
+                {if $item->hasChildren()}
+                <div>
+                    {snippet detail}
+                    <div>
+                        {block itemContent}
+                        <span>
+                            {if $item->isActive()}
+                            <strong>{$item->name}</strong>
+                            {/if}
+                        </span>
+                        {/block}
+                    </div>
+                    {/snippet}
+                </div>
+                {/if}
+            </div>
+            {/foreach}
+        </nav>
+        {/block}
+    </header>
+    {/snippet}
+</div>
+{/block}
