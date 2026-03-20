@@ -189,24 +189,6 @@ public class PhpVariableTypeTest extends BasePsiParsingTestCase {
         Assert.assertEquals("null|\\DateTime", detectPhpType(cDefinition));
         Assert.assertEquals("int|string", detectPhpType(dDefinition));
     }
-/*
-    todo: uncomment after resolve PHP dependencies (for native php classes)
-    @Test
-    public void testMethodDefinition() throws IOException {
-        String name = "MethodDefinition.latte";
-        PsiFile file = parseFile(name, loadFile(name));
-        List<LattePhpVariable> variables = collectVariables(file);
-        Assert.assertSame(3, variables.size());
-
-        LattePhpVariable fooDefinition = variables.get(0);
-        LattePhpVariable barDefinition = variables.get(1);
-        LattePhpVariable fooUsage = variables.get(2);
-
-        //Assert.assertEquals("\\DateTime[]", detectPhpType(fooDefinition));
-        Assert.assertEquals("string", detectPhpType(barDefinition));
-        //Assert.assertEquals("\\DateTime", detectPhpType(fooUsage));
-    }
-*/
     public void assertForeachReferenceDefinition(@NotNull String name) throws IOException {
         PsiFile file = parseFile(name, loadFile(name));
         List<LattePhpVariable> variables = collectVariables(file);

@@ -194,6 +194,64 @@ public class LatteTopLexerAdapterTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	public void testNestedHtmlTags() {
+		Lexer lexer = new LatteTopLexerAdapter();
+
+		lexer.start("<div><span>text</span></div>");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_HTML_OPEN_TAG_OPEN, "<"),
+			Pair.create(T_TEXT, "div"),
+			Pair.create(T_HTML_TAG_CLOSE, ">"),
+			Pair.create(T_HTML_OPEN_TAG_OPEN, "<"),
+			Pair.create(T_TEXT, "span"),
+			Pair.create(T_HTML_TAG_CLOSE, ">"),
+			Pair.create(T_TEXT, "text"),
+			Pair.create(T_HTML_CLOSE_TAG_OPEN, "</"),
+			Pair.create(T_TEXT, "span"),
+			Pair.create(T_HTML_TAG_CLOSE, ">"),
+			Pair.create(T_HTML_CLOSE_TAG_OPEN, "</"),
+			Pair.create(T_TEXT, "div"),
+			Pair.create(T_HTML_TAG_CLOSE, ">"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testSelfClosingTag() {
+		Lexer lexer = new LatteTopLexerAdapter();
+
+		lexer.start("<br/>");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_HTML_OPEN_TAG_OPEN, "<"),
+			Pair.create(T_TEXT, "br"),
+			Pair.create(T_HTML_OPEN_TAG_CLOSE, "/>"),
+		});
+
+		lexer.start("<input type=\"text\" />");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_HTML_OPEN_TAG_OPEN, "<"),
+			Pair.create(T_TEXT, "input type=\"text\" "),
+			Pair.create(T_HTML_OPEN_TAG_CLOSE, "/>"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testMacroInAttribute() {
+		Lexer lexer = new LatteTopLexerAdapter();
+
+		lexer.start("<div class=\"{$cls}\">");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_HTML_OPEN_TAG_OPEN, "<"),
+			Pair.create(T_TEXT, "div class=\""),
+			Pair.create(T_MACRO_CLASSIC, "{$cls}"),
+			Pair.create(T_TEXT, "\""),
+			Pair.create(T_HTML_TAG_CLOSE, ">"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	public void testHtml() {
 		Lexer lexer = new LatteTopLexerAdapter();
 

@@ -118,6 +118,20 @@ public class LattePhpTypeDetector {
                 }
             }
 
+            // Check if this variable itself has a type annotation (e.g. in {define}, {var}, {parameters} tags)
+            LattePhpTypedPartElement ownTypedPart = PsiTreeUtil.getParentOfType(variable, LattePhpTypedPartElement.class);
+            if (ownTypedPart != null && ownTypedPart.getPhpType() != null) {
+                return detect(ownTypedPart);
+            }
+
+            // For definitions, check the assignment value of the definition itself
+            if (cachedVariable.isDefinition()) {
+                LattePhpStatement valueStatement = cachedVariable.getNextStatement();
+                if (valueStatement != null && valueStatement != (variable.getPhpStatementPart() != null ? cachedVariable.getPhpStatement() : null)) {
+                    return detect(valueStatement);
+                }
+            }
+
             List<LattePhpCachedVariable> definitions = file.getCachedVariableDefinitions(variable);
             if (definitions.size() > 0) {
                 LattePhpCachedVariable lastDefinition = definitions.get(definitions.size() - 1);

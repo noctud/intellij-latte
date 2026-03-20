@@ -42,7 +42,11 @@ public class LattePhpCachedVariable {
     }
 
     public boolean isProbablyUndefined() {
-        return probablyUndefined; //todo: implement content
+        return probablyUndefined;
+    }
+
+    public void setProbablyUndefined(boolean probablyUndefined) {
+        this.probablyUndefined = probablyUndefined;
     }
 
     public int getPosition() {
@@ -207,11 +211,18 @@ public class LattePhpCachedVariable {
         } else if (probablySameOrParent == null) {
             return false;
         }
-        PsiElement parentContext = findVariableContext(probablySameOrParent.getParent());
+        PsiElement parent = probablySameOrParent.getParent();
+        if (parent == null) {
+            return false;
+        }
+        PsiElement parentContext = findVariableContext(parent);
         return isSameOrParentContext(check, parentContext);
     }
 
-    private static @Nullable PsiElement findVariableContext(@NotNull PsiElement element) {
+    public static @Nullable PsiElement findVariableContext(@NotNull PsiElement element) {
+        if (element instanceof LatteFile) {
+            return element;
+        }
         if (element instanceof LattePhpVariable && (!((LattePhpVariable) element).isDefinition() && !LatteUtil.matchParentMacroName(element, LatteTagsUtil.Type.FOR.getTagName()))) {
             PsiElement mainOpenTag = PsiTreeUtil.getParentOfType(element, LatteMacroOpenTag.class, LatteHtmlOpenTag.class);
             if (mainOpenTag != null) {

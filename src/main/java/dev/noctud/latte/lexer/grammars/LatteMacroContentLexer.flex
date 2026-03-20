@@ -32,7 +32,8 @@ SIGNAL=[a-zA-Z\-\:]+ "!"
     }
 
 	// General PHP-ish starters: produce content but do not consume macro closer '}' or newline
-	({CLASS_NAME} | "$" | {FUNCTION_CALL} | "\"" | "'" | "(" | "[" | "|") [^}\r\n]* {
+	// Allows one level of balanced braces (e.g. closures: function() { ... })
+	({CLASS_NAME} | "$" | {FUNCTION_CALL} | "\"" | "'" | "(" | "[" | "|") ([^{}\r\n] | "{" [^}\r\n]* "}")* {
         return T_PHP_CONTENT;
     }
 

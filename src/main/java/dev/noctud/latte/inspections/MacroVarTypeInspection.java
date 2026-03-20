@@ -4,6 +4,7 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
+import dev.noctud.latte.inspections.utils.LatteInspectionInfo;
 import dev.noctud.latte.psi.LatteFile;
 import dev.noctud.latte.psi.*;
 import dev.noctud.latte.utils.LatteTypesUtil;
@@ -29,6 +30,13 @@ public class MacroVarTypeInspection extends BaseLocalInspectionTool {
         }
 
         final List<ProblemDescriptor> problems = new ArrayList<>();
+        addInspections(manager, problems, checkFile(file), isOnTheFly);
+        return problems.toArray(new ProblemDescriptor[0]);
+    }
+
+    @NotNull
+    List<LatteInspectionInfo> checkFile(@NotNull final PsiFile file) {
+        final List<LatteInspectionInfo> problems = new ArrayList<>();
         file.acceptChildren(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(PsiElement element) {
@@ -38,7 +46,7 @@ public class MacroVarTypeInspection extends BaseLocalInspectionTool {
                         List<LattePhpContent> phpContent = new ArrayList<>(macroContent.getPhpContentList());
 
                         if (phpContent.size() == 0) {
-                            addError(manager, problems, element, "Tag {varType} must have php content.", isOnTheFly);
+                            problems.add(LatteInspectionInfo.strictError(element, "Tag {varType} must have php content."));
 
                         } else {
                             LattePhpContent content = phpContent.get(0);
@@ -52,10 +60,10 @@ public class MacroVarTypeInspection extends BaseLocalInspectionTool {
                                 }
                             });
                             if (children.size() != 1) {
-                                addError(manager, problems, element, "First value in {varType} tag must be type definition.", isOnTheFly);
+                                problems.add(LatteInspectionInfo.strictError(element, "First value in {varType} tag must be type definition."));
 
                             } else if (!(children.get(0) instanceof LattePhpTypedArguments) || ((LattePhpTypedArguments) children.get(0)).getPhpFirstTypedVariable() == null) {
-                                addError(manager, problems, element, "Invalid value in {varType} tag. Only type definition and variable are allowed.", isOnTheFly);
+                                problems.add(LatteInspectionInfo.strictError(element, "Invalid value in {varType} tag. Only type definition and variable are allowed."));
                             }
                         }
                     }
@@ -65,6 +73,6 @@ public class MacroVarTypeInspection extends BaseLocalInspectionTool {
                 }
             }
         });
-        return problems.toArray(new ProblemDescriptor[0]);
+        return problems;
     }
 }

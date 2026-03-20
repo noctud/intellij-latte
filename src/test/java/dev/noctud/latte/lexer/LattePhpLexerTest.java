@@ -509,6 +509,106 @@ public class LattePhpLexerTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	public void testNullSafeOperator() throws Exception {
+		Lexer lexer = new LatteLexer();
+		lexer.start("{$obj?->method()}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$obj"),
+			Pair.create(T_PHP_OBJECT_OPERATOR, "?->"),
+			Pair.create(T_PHP_IDENTIFIER, "method"),
+			Pair.create(T_PHP_LEFT_NORMAL_BRACE, "("),
+			Pair.create(T_PHP_RIGHT_NORMAL_BRACE, ")"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+
+		lexer.start("{$obj?->property}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$obj"),
+			Pair.create(T_PHP_OBJECT_OPERATOR, "?->"),
+			Pair.create(T_PHP_IDENTIFIER, "property"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testSpreadOperator() throws Exception {
+		Lexer lexer = new LatteLexer();
+		lexer.start("{foo(...$args)}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_PHP_IDENTIFIER, "foo"),
+			Pair.create(T_PHP_LEFT_NORMAL_BRACE, "("),
+			Pair.create(T_PHP_EXPRESSION, "..."),
+			Pair.create(T_MACRO_ARGS_VAR, "$args"),
+			Pair.create(T_PHP_RIGHT_NORMAL_BRACE, ")"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testNullCoalescing() throws Exception {
+		Lexer lexer = new LatteLexer();
+		lexer.start("{$a ?? $b}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$a"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_EXPRESSION, "??"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS_VAR, "$b"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testArrayDestructuring() throws Exception {
+		Lexer lexer = new LatteLexer();
+		lexer.start("{var [$a, $b] = $arr}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_NAME, "var"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_LEFT_BRACKET, "["),
+			Pair.create(T_MACRO_ARGS_VAR, "$a"),
+			Pair.create(T_MACRO_ARGS, ","),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS_VAR, "$b"),
+			Pair.create(T_PHP_RIGHT_BRACKET, "]"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_DEFINITION_OPERATOR, "="),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS_VAR, "$arr"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testEnumAccess() throws Exception {
+		Lexer lexer = new LatteLexer();
+
+		lexer.start("{\\App\\Enums\\Status::Active}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_PHP_NAMESPACE_RESOLUTION, "\\"),
+			Pair.create(T_PHP_NAMESPACE_REFERENCE, "App"),
+			Pair.create(T_PHP_NAMESPACE_RESOLUTION, "\\"),
+			Pair.create(T_PHP_NAMESPACE_REFERENCE, "Enums"),
+			Pair.create(T_PHP_NAMESPACE_RESOLUTION, "\\"),
+			Pair.create(T_PHP_NAMESPACE_REFERENCE, "Status"),
+			Pair.create(T_PHP_DOUBLE_COLON, "::"),
+			Pair.create(T_PHP_IDENTIFIER, "Active"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	public void testModifiers() throws Exception {
 		Lexer lexer = new LatteLexer();
 		lexer.start("{$object|bytes}");

@@ -6,6 +6,6 @@ Latte file
         LattePhpContentImpl(PHP_CONTENT)
           LattePhpStatementImpl(PHP_STATEMENT)
             LattePhpStatementFirstPartImpl(PHP_STATEMENT_FIRST_PART)
-              LattePhpVariableImpl(PHP_VARIABLE)('$foo')
+              LattePhpVariableImpl(PHP_VARIABLE)
                 PsiElement(LatteTokenType.T_MACRO_ARGS_VAR)('$foo')
       PsiElement(LatteTokenType.T_MACRO_TAG_CLOSE)('}')

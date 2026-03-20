@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
+import dev.noctud.latte.inspections.utils.LatteInspectionInfo;
 import dev.noctud.latte.psi.LatteFile;
 import dev.noctud.latte.psi.*;
 import dev.noctud.latte.utils.LatteTypesUtil;
@@ -32,6 +33,13 @@ public class MacroVarInspection extends BaseLocalInspectionTool {
         }
 
         final List<ProblemDescriptor> problems = new ArrayList<>();
+        addInspections(manager, problems, checkFile(file), isOnTheFly);
+        return problems.toArray(new ProblemDescriptor[0]);
+    }
+
+    @NotNull
+    List<LatteInspectionInfo> checkFile(@NotNull final PsiFile file) {
+        final List<LatteInspectionInfo> problems = new ArrayList<>();
         file.acceptChildren(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(PsiElement element) {
@@ -41,7 +49,7 @@ public class MacroVarInspection extends BaseLocalInspectionTool {
                         List<LattePhpContent> phpContent = new ArrayList<>(macroContent.getPhpContentList());
 
                         if (phpContent.size() == 0) {
-                            addError(manager, problems, element, "Tag {var} must have php content.", isOnTheFly);
+                            problems.add(LatteInspectionInfo.strictError(element, "Tag {var} must have php content."));
 
                         } else {
                             LattePhpContent content = phpContent.get(0);
@@ -56,20 +64,20 @@ public class MacroVarInspection extends BaseLocalInspectionTool {
                             });
 
                             if (children.size() == 0) {
-                                addError(manager, problems, element, "Tag {var} must contain valid variable definition.", isOnTheFly);
+                                problems.add(LatteInspectionInfo.strictError(element, "Tag {var} must contain valid variable definition."));
 
                             } else {
                                 if (
                                     !(children.get(0) instanceof LattePhpTypedArguments)
                                         && (!(children.get(0) instanceof LattePhpStatement) || !((LattePhpStatement) children.get(0)).isPhpVariableOnly())
                                 ) {
-                                    addError(manager, problems, element, "Tag {var} must contain valid variable definition.", isOnTheFly);
+                                    problems.add(LatteInspectionInfo.strictError(element, "Tag {var} must contain valid variable definition."));
 
                                 } else if (children.size() < 2 || children.get(1).getNode().getElementType() != LatteTypes.T_PHP_DEFINITION_OPERATOR) {
-                                    addError(manager, problems, element, "Tag {var} must contain definition operator (=).", isOnTheFly);
+                                    problems.add(LatteInspectionInfo.strictError(element, "Tag {var} must contain definition operator (=)."));
 
                                 } else if (children.size() < 3) {
-                                    addError(manager, problems, element, "Tag {var} must contain variable content after =.", isOnTheFly);
+                                    problems.add(LatteInspectionInfo.strictError(element, "Tag {var} must contain variable content after =."));
                                 }
                             }
                         }
@@ -80,6 +88,6 @@ public class MacroVarInspection extends BaseLocalInspectionTool {
                 }
             }
         });
-        return problems.toArray(new ProblemDescriptor[0]);
+        return problems;
     }
 }

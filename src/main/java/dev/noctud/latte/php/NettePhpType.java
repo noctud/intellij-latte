@@ -140,13 +140,17 @@ public class NettePhpType {
 
         parts.addAll(Arrays.asList(typeString.split("\\|")));
         Map<Integer, Boolean> isObjectOnly = new HashMap<>();
+        Map<Integer, Integer> partsAtDepth = new HashMap<>();
+        int totalParts = 0;
         for (String part : parts) {
             part = part.trim();
             if (part.length() == 0) {
                 continue;
             }
 
+            totalParts++;
             NettePhpType.TypePart typePart = new NettePhpType.TypePart(part);
+            partsAtDepth.merge(typePart.depth, 1, Integer::sum);
             if (!typePart.isClass() && !typePart.isObject()) {
                 isObjectOnly.put(typePart.depth, false);
             } else if (!isObjectOnly.containsKey(typePart.depth)) {
@@ -194,7 +198,7 @@ public class NettePhpType {
         }
 
         for (int depth : isObjectOnly.keySet()) {
-            if (isObjectOnly.get(depth)) {
+            if (isObjectOnly.get(depth) && partsAtDepth.getOrDefault(depth, 0) == totalParts) {
                 this.objectOnly.add(depth);
             }
         }

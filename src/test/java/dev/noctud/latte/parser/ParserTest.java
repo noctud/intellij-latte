@@ -80,4 +80,39 @@ public class ParserTest extends BasePsiParsingTestCase {
         doTest(true, true);
     }
 
+    @Test
+    public void testNestedBlocks() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testEmptyMacro() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testMultipleStatements() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testStringContent() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testNAttribute() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testCommentMacro() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testMacroWithFilters() {
+        doTest(true, true);
+    }
+
 }

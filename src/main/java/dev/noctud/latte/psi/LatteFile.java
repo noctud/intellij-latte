@@ -89,21 +89,44 @@ public class LatteFile extends PsiFileBase {
     }
 
     public List<LattePhpCachedVariable> getCachedVariableDefinitions(@NotNull LattePhpVariableElement element) {
-        //PsiElement context = element.getVariableContext();
-        //todo: use contexts
+        PsiElement usageContext = LattePhpCachedVariable.findVariableContext(element);
         String searchName = element.getVariableName();
         int maxOffset = element.getTextOffset();
-        List<LattePhpCachedVariable> out = new ArrayList<>();
+        List<LattePhpCachedVariable> candidates = new ArrayList<>();
         for (int i = 0; i < getCachedVariables().size(); i++) {
             LattePhpCachedVariable variable = getCachedVariables().get(i);
-            if (variable.getPosition() > maxOffset) {
+            if (variable.getPosition() >= maxOffset) {
                 break;
             }
             if (variable.isDefinition() && variable.getVariableName().equals(searchName)) {
-                out.add(variable);
+                candidates.add(variable);
             }
         }
-        return out;
+
+        List<LattePhpCachedVariable> sameContext = new ArrayList<>();
+        List<LattePhpCachedVariable> parentContext = new ArrayList<>();
+        List<LattePhpCachedVariable> childContext = new ArrayList<>();
+        for (LattePhpCachedVariable candidate : candidates) {
+            PsiElement defContext = candidate.getVariableContext();
+            if (defContext == usageContext) {
+                sameContext.add(candidate);
+            } else if (LattePhpCachedVariable.isSameOrParentContext(defContext, usageContext)) {
+                parentContext.add(candidate);
+            } else {
+                LattePhpCachedVariable copy = new LattePhpCachedVariable(candidate.getPosition(), candidate.getElement());
+                copy.setProbablyUndefined(true);
+                childContext.add(copy);
+            }
+        }
+
+        // Same-context definitions shadow parent-context definitions
+        if (!sameContext.isEmpty()) {
+            return sameContext;
+        }
+        if (!parentContext.isEmpty()) {
+            return parentContext;
+        }
+        return childContext;
     }
 
     public List<LattePhpCachedVariable> getCachedVariableDefinitions(int maxOffset, @NotNull String searchName) {

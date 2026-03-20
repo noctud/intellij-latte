@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import dev.noctud.latte.config.LatteConfiguration;
+import dev.noctud.latte.inspections.utils.LatteInspectionInfo;
 import dev.noctud.latte.intentions.AddCustomLatteModifier;
 import dev.noctud.latte.psi.LatteFile;
 import dev.noctud.latte.psi.LatteMacroModifier;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModifierDefinitionInspection extends LocalInspectionTool {
+public class ModifierDefinitionInspection extends BaseLocalInspectionTool {
 
     @NotNull
     @Override
@@ -32,6 +33,18 @@ public class ModifierDefinitionInspection extends LocalInspectionTool {
         }
 
         final List<ProblemDescriptor> problems = new ArrayList<>();
+        for (LatteInspectionInfo info : checkFile(file)) {
+            LocalQuickFix[] fixes = info.getFixes();
+            ProblemDescriptor problem = manager.createProblemDescriptor(info.getElement(), info.getDescription(), true, info.getType(), isOnTheFly, fixes);
+            problems.add(problem);
+        }
+
+        return problems.toArray(new ProblemDescriptor[0]);
+    }
+
+    @NotNull
+    List<LatteInspectionInfo> checkFile(@NotNull final PsiFile file) {
+        final List<LatteInspectionInfo> problems = new ArrayList<>();
         file.acceptChildren(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement element) {
@@ -39,17 +52,19 @@ public class ModifierDefinitionInspection extends LocalInspectionTool {
                     String filterName = ((LatteMacroModifier) element).getModifierName();
                     LatteFilterSettings latteFilter = LatteConfiguration.getInstance(element.getProject()).getFilter(filterName);
                     if (latteFilter == null) {
-                        LocalQuickFix addModifierFix = IntentionManager.getInstance().convertToFix(new AddCustomLatteModifier(filterName));
-                        ProblemHighlightType type = ProblemHighlightType.GENERIC_ERROR_OR_WARNING;
-                        String description = "Undefined latte filter '" + filterName + "'";
-                        ProblemDescriptor problem = manager.createProblemDescriptor(element, description, true, type, isOnTheFly, addModifierFix);
-                        problems.add(problem);
+                        LatteInspectionInfo info = LatteInspectionInfo.error(element, "Undefined latte filter '" + filterName + "'");
+                        IntentionManager intentionManager = IntentionManager.getInstance();
+                        if (intentionManager != null) {
+                            LocalQuickFix addModifierFix = intentionManager.convertToFix(new AddCustomLatteModifier(filterName));
+                            if (addModifierFix != null) {
+                                info.addFix(addModifierFix);
+                            }
+                        }
+                        problems.add(info);
 
                     } else if (((LatteMacroModifier) element).getMacroModifierPartList().size() < latteFilter.getModifierInsert().length()) {
-                        ProblemHighlightType type = ProblemHighlightType.WARNING;
                         String description = "Missing required filter parameters (" + latteFilter.getModifierInsert().length() + " required)";
-                        ProblemDescriptor problem = manager.createProblemDescriptor(element, description, true, type, isOnTheFly);
-                        problems.add(problem);
+                        problems.add(LatteInspectionInfo.warning(element, description));
                     }
 
                 } else {
@@ -58,6 +73,6 @@ public class ModifierDefinitionInspection extends LocalInspectionTool {
             }
         });
 
-        return problems.toArray(new ProblemDescriptor[0]);
+        return problems;
     }
 }

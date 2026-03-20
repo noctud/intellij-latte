@@ -35,6 +35,10 @@ public final class LatteInspectionInfo {
         return new LatteInspectionInfo(element, description, ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
     }
 
+    public static LatteInspectionInfo strictError(@NotNull final PsiElement element, @NotNull final String description) {
+        return new LatteInspectionInfo(element, description, ProblemHighlightType.GENERIC_ERROR);
+    }
+
     public static LatteInspectionInfo unused(@NotNull final PsiElement element, @NotNull final String description) {
         return new LatteInspectionInfo(element, description, ProblemHighlightType.LIKE_UNUSED_SYMBOL);
     }
