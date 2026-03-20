@@ -1,0 +1,37 @@
+{block content}
+<div class="page">
+  {snippet header}
+  <header>
+      {block navigation}
+      <nav>
+          <ul>
+              {foreach $items as $item}
+              <li>
+                  {if $item->hasChildren()}
+                  <div class="dropdown">
+                      {snippet itemDetail-$item->id}
+                      <div class="detail">
+                          {block itemContent}
+                          <span>
+                              {if $item->isActive()}
+                              <strong>
+                                  {snippet badge-$item->id}
+                                  <em>{$item->name}</em>
+                                  {/snippet}
+                              </strong>
+                              {/if}
+                          </span>
+                          {/block}
+                      </div>
+                      {/snippet}
+                  </div>
+                  {/if}
+              </li>
+              {/foreach}
+          </ul>
+      </nav>
+      {/block}
+  </header>
+  {/snippet}
+</div>
+{/block}
