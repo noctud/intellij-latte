@@ -48,7 +48,7 @@ Building
 ------------
 
 ```sh
-./gradlew buildPlugin
+./gradlew build
 ```
 
 Testing in sandbox IDE

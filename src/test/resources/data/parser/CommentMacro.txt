@@ -1,0 +1,4 @@
+Latte file
+  PsiComment(LatteTokenType.T_MACRO_COMMENT)('{* this is a comment *}')
+  LatteOuterHtmlImpl(OUTER_HTML)
+    PsiElement(LatteTokenType.T_TEXT)('text')

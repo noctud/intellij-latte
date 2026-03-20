@@ -1,0 +1,13 @@
+Latte file
+  LatteUnpairedMacroImpl(UNPAIRED_MACRO)
+    LatteMacroOpenTagImpl(MACRO_OPEN_TAG)
+      PsiElement(LatteTokenType.T_MACRO_OPEN_TAG_OPEN)('{')
+      PsiElement(LatteTokenType.T_MACRO_SHORTNAME)('=')
+      PsiWhiteSpace(' ')
+      LatteMacroContentImpl(MACRO_CONTENT)
+        LattePhpContentImpl(PHP_CONTENT)
+          LattePhpStringImpl(PHP_STRING)
+            PsiElement(LatteTokenType.T_PHP_DOUBLE_QUOTE_LEFT)('"')
+            PsiElement(LatteTokenType.T_MACRO_ARGS_STRING)('hello world')
+            PsiElement(LatteTokenType.T_PHP_DOUBLE_QUOTE_RIGHT)('"')
+      PsiElement(LatteTokenType.T_MACRO_TAG_CLOSE)('}')

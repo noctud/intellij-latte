@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.2] - Unreleased
+
+### Fixed
+
+- Variable resolution now respects scope contexts (foreach, if, block)
+- Variables defined in inner scopes are marked as "probably undefined" outside
+- Inner variable definitions correctly shadow outer ones
+- Type detection for typed variable definitions (e.g. `{define input, float $name}`)
+- Lexer handling of PHP closures inside latte tags (`function() { }`)
+- Type compatibility check for union types at different depths
+
+### Changed
+
+- CI now runs tests on every push and PR
+- Added tests for inspections, parser edge cases, lexer, and utilities
+
 ## [1.6.1] - 2025-12-18
 
 ### Fixed
