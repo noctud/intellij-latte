@@ -8,7 +8,7 @@ import com.jetbrains.php.lang.psi.elements.Method;
 import org.jetbrains.annotations.NotNull;
 import dev.noctud.latte.psi.*;
 
-class LatteRenamePsiElementProcessor extends RenamePsiElementProcessor {
+public class LatteRenamePsiElementProcessor extends RenamePsiElementProcessor {
 
     @Override
     public boolean canProcessElement(@NotNull PsiElement psiElement) {

@@ -144,6 +144,9 @@ public class VariablesInspection extends BaseLocalInspectionTool {
         }
 
         String variableName = element.getVariableName();
+        if (variableName == null) {
+            return;
+        }
         if (!isDefined) {
             LatteVariableSettings defaultVariable = LatteConfiguration.getInstance(element.getProject()).getVariable(variableName);
             if (defaultVariable != null) {

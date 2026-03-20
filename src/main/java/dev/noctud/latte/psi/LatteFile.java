@@ -91,6 +91,9 @@ public class LatteFile extends PsiFileBase {
     public List<LattePhpCachedVariable> getCachedVariableDefinitions(@NotNull LattePhpVariableElement element) {
         PsiElement usageContext = LattePhpCachedVariable.findVariableContext(element);
         String searchName = element.getVariableName();
+        if (searchName == null) {
+            return new ArrayList<>();
+        }
         int maxOffset = element.getTextOffset();
         List<LattePhpCachedVariable> candidates = new ArrayList<>();
         for (int i = 0; i < getCachedVariables().size(); i++) {
@@ -98,7 +101,7 @@ public class LatteFile extends PsiFileBase {
             if (variable.getPosition() >= maxOffset) {
                 break;
             }
-            if (variable.isDefinition() && variable.getVariableName().equals(searchName)) {
+            if (variable.isDefinition() && searchName.equals(variable.getVariableName())) {
                 candidates.add(variable);
             }
         }
@@ -144,7 +147,7 @@ public class LatteFile extends PsiFileBase {
             if (variable.getPosition() > maxOffset) {
                 break;
             }
-            if ((!onlyDefinitions || variable.isDefinition()) && (searchName == null || variable.getVariableName().equals(searchName))) {
+            if ((!onlyDefinitions || variable.isDefinition()) && (searchName == null || searchName.equals(variable.getVariableName()))) {
                 out.add(variable);
             }
         }
@@ -158,7 +161,7 @@ public class LatteFile extends PsiFileBase {
     ) {
         return getCachedVariables().stream()
             .filter(
-                variable -> variable.getVariableName().equals(searchName)
+                variable -> searchName.equals(variable.getVariableName())
                     && ((!onlyUsages || !variable.isDefinition()) && (!onlyDefinitions || variable.isDefinition()))
             )
             .collect(Collectors.toList());

@@ -11,6 +11,7 @@
 - Lexer handling of PHP closures inside latte tags (`function() { }`)
 - Type compatibility check for union types at different depths
 - Deeply nested blocks/snippets producing errors on closing tags
+- Null pointer errors during variable rename refactoring
 
 ### Changed
 

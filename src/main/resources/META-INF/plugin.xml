@@ -41,7 +41,7 @@
 
 		<!-- must have -->
 		<completion.contributor language="Latte" implementationClass="dev.noctud.latte.completion.LatteCompletionContributor"/>
-		<renamePsiElementProcessor implementation="refactoring.dev.noctud.latte.LatteRenamePsiElementProcessor"/>
+		<renamePsiElementProcessor implementation="dev.noctud.latte.refactoring.LatteRenamePsiElementProcessor"/>
 		<lang.smartEnterProcessor implementationClass="dev.noctud.latte.editor.LatteSmartEnterProcessor" />
 
 		<referencesSearch implementation="dev.noctud.latte.reference.LatteReferenceSearch"/>
