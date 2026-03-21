@@ -57,3 +57,11 @@ Testing in sandbox IDE
 ```sh
 ./gradlew runIde
 ```
+
+Generating config from PHP sources
+------------
+To generate config of this plugin with custom filters, functions and tags from your Latte extensions, use [contrib/CustomSources](contrib/CustomSources/).
+
+* In `contrib/CustomSources/`, run `composer i`.
+* Edit `generate.php` to use your Latte extensions and run it.
+* It will generate `latte.xml` which you can store in the `.idea/` directory of your project.
