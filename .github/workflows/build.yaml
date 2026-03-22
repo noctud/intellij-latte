@@ -2,6 +2,9 @@ name: Build with Gradle
 
 on: [push, pull_request]
 
+permissions:
+    contents: write
+
 jobs:
   build:
     # Only run on PRs if the source branch is on a different repo. We do not need to run everything twice.
