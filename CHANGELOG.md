@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.3] - 2026-03-23
+
+### Fixed
+
+- False "probably undefined" variable warning in nested scopes
+
 ## [1.6.2] - 2026-03-22
 
 ### Fixed

@@ -223,6 +223,25 @@ public class LattePhpCachedVariable {
         if (element instanceof LatteFile) {
             return element;
         }
+        // If element itself is a context-creating pair macro, return it directly.
+        // getParentOfType below uses strict mode which skips the element itself,
+        // so without this check, context pair macros are missed when walked into
+        // from isSameOrParentContext.
+        if (element instanceof LattePairMacro) {
+            LatteMacroTag openTag = ((LattePairMacro) element).getMacroOpenTag();
+            if (openTag != null && LatteTagsUtil.isContextTag(openTag.getMacroName())) {
+                return element;
+            }
+        } else if (element instanceof LatteHtmlPairTag) {
+            LatteHtmlOpenTag openTag = ((LatteHtmlPairTag) element).getHtmlOpenTag();
+            if (openTag.getHtmlTagContent() != null) {
+                for (LatteNetteAttr netteAttr : openTag.getHtmlTagContent().getNetteAttrList()) {
+                    if (LatteTagsUtil.isContextNetteAttribute(netteAttr.getAttrName().getText())) {
+                        return element;
+                    }
+                }
+            }
+        }
         if (element instanceof LattePhpVariable && (!((LattePhpVariable) element).isDefinition() && !LatteUtil.matchParentMacroName(element, LatteTagsUtil.Type.FOR.getTagName()))) {
             PsiElement mainOpenTag = PsiTreeUtil.getParentOfType(element, LatteMacroOpenTag.class, LatteHtmlOpenTag.class);
             if (mainOpenTag != null) {

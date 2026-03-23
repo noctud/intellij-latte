@@ -102,6 +102,22 @@ public class VariablesInspectionTest extends BasePsiParsingTestCase {
         Assert.assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, problems.get(1).getType());
     }
 
+    @Test
+    public void testVariableDefinedInParentScope() throws IOException {
+        List<LatteInspectionInfo> problems = getProblems("VariableDefinedInParentScope.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
+    @Test
+    public void testVariableDefinedInParentScopeNestedIf() throws IOException {
+        List<LatteInspectionInfo> problems = getProblems("VariableDefinedInParentScope2.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
     private List<LatteInspectionInfo> getProblems(@NotNull String templateName) throws IOException {
         PsiFile file = parseFile(templateName);
 

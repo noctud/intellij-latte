@@ -1,0 +1,15 @@
+{block content}
+    {var $test123 = 'a'}
+    {if true}
+        {$test123}
+    {/if}
+    {if true}
+        {if true}
+            {$test123}
+        {/if}
+    {/if}
+    {foreach [1, 2, 3] as $item}
+        {$test123}
+        {$item}
+    {/foreach}
+{/block}
