@@ -5,6 +5,7 @@
 ### Fixed
 
 - False "probably undefined" variable warning in nested scopes
+- False warnings for function and arrow function parameters
 
 ## [1.6.2] - 2026-03-22
 

@@ -143,6 +143,10 @@ public class LattePhpCachedVariable {
         return definitionInForeach;
     }
 
+    public boolean isFunctionParameter() {
+        return isFunctionParameterDefinition();
+    }
+
     public boolean isNextDefinitionOperator() {
         return isNextDefinitionOperator(element);
     }
@@ -198,11 +202,36 @@ public class LattePhpCachedVariable {
         if (isDefinitionInForeach()) {
             return true;
         }
-        return isDefinitionInFor();
+
+        if (isDefinitionInFor()) {
+            return true;
+        }
+
+        return isFunctionParameterDefinition();
     }
 
     private boolean isDefinitionInFor() {
         return LatteUtil.matchParentMacroName(element, LatteTagsUtil.Type.FOR.getTagName()) && isNextDefinitionOperator();
+    }
+
+    private boolean isFunctionParameterDefinition() {
+        LattePhpInBrackets brackets = PsiTreeUtil.getParentOfType(element, LattePhpInBrackets.class);
+        if (brackets == null) {
+            return false;
+        }
+
+        PsiElement leftBrace = brackets.getFirstChild();
+        if (leftBrace == null) {
+            return false;
+        }
+
+        PsiElement prev = PsiTreeUtil.prevVisibleLeaf(leftBrace);
+        if (prev == null || prev.getNode().getElementType() != LatteTypes.T_PHP_KEYWORD) {
+            return false;
+        }
+
+        String text = prev.getText();
+        return text.equals("function") || text.equals("fn");
     }
 
     public static boolean isSameOrParentContext(@Nullable PsiElement check, @Nullable PsiElement probablySameOrParent) {

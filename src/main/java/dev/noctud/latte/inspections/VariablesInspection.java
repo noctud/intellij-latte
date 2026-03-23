@@ -89,6 +89,12 @@ public class VariablesInspection extends BaseLocalInspectionTool {
 
         LattePhpVariableElement variable = element.getElement();
         String variableName = element.getVariableName();
+
+        // Function/arrow function parameters are self-contained; skip duplicate and unused checks
+        if (element.isFunctionParameter()) {
+            return;
+        }
+
         if (!element.isVarTypeDefinition()) {
             LatteVariableSettings defaultVariable = LatteConfiguration.getInstance(element.getProject()).getVariable(variableName);
             if (defaultVariable != null) {

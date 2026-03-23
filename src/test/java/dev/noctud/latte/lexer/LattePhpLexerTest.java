@@ -609,6 +609,34 @@ public class LattePhpLexerTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	public void testArrowFunction() throws Exception {
+		Lexer lexer = new LatteLexer();
+		lexer.start("{$items->filter(fn($f) => $f > 0)}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$items"),
+			Pair.create(T_PHP_OBJECT_OPERATOR, "->"),
+			Pair.create(T_PHP_IDENTIFIER, "filter"),
+			Pair.create(T_PHP_LEFT_NORMAL_BRACE, "("),
+			Pair.create(T_PHP_KEYWORD, "fn"),
+			Pair.create(T_PHP_LEFT_NORMAL_BRACE, "("),
+			Pair.create(T_MACRO_ARGS_VAR, "$f"),
+			Pair.create(T_PHP_RIGHT_NORMAL_BRACE, ")"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_DOUBLE_ARROW, "=>"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS_VAR, "$f"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_RELATIONAL_OPERATOR, ">"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS_NUMBER, "0"),
+			Pair.create(T_PHP_RIGHT_NORMAL_BRACE, ")"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	public void testModifiers() throws Exception {
 		Lexer lexer = new LatteLexer();
 		lexer.start("{$object|bytes}");

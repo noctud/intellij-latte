@@ -118,6 +118,22 @@ public class VariablesInspectionTest extends BasePsiParsingTestCase {
         Assert.assertSame(0, problems.size());
     }
 
+    @Test
+    public void testArrowFunctionParameter() throws IOException {
+        List<LatteInspectionInfo> problems = getProblems("ArrowFunctionParameter.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
+    @Test
+    public void testClosureParameter() throws IOException {
+        List<LatteInspectionInfo> problems = getProblems("ClosureParameter.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
     private List<LatteInspectionInfo> getProblems(@NotNull String templateName) throws IOException {
         PsiFile file = parseFile(templateName);
 
