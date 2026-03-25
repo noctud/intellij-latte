@@ -182,10 +182,8 @@ public class LattePhpCachedVariable {
             return true;
         }
 
-        if (isVarDefinition() || isPhpArrayVarDefinition()) {
-            if (isNextDefinitionOperator()) {
-                return true;
-            }
+        if (isNextDefinitionOperator()) {
+            return true;
         }
 
         PsiElement parent = element.getParent();

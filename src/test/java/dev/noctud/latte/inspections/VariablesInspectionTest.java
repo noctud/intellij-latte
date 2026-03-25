@@ -168,6 +168,38 @@ public class VariablesInspectionTest extends BasePsiParsingTestCase {
     }
 
     @Test
+    public void testVariableDefinedInIfCondition() throws IOException {
+        List<LatteInspectionInfo> problems = getProblems("VariableDefinedInIfCondition.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
+    @Test
+    public void testVariableAssignedInConditionScope() throws IOException {
+        // {if $a = getSomething()} defines $a, but using $a after {/if} should be "probably undefined"
+        List<LatteInspectionInfo> problems = getProblems("VariableAssignedInConditionScope.latte");
+
+        Assert.assertNotNull(problems);
+        LatteInspectionInfo probablyUndefined = problems.stream()
+            .filter(p -> p.getDescription().contains("probably undefined"))
+            .findFirst().orElse(null);
+        Assert.assertNotNull("Expected 'probably undefined' for variable used after conditional assignment", probablyUndefined);
+    }
+
+    @Test
+    public void testComparisonNotDefinition() throws IOException {
+        // {if $a == 'test'} is a comparison, not a definition — $a should be undefined
+        List<LatteInspectionInfo> problems = getProblems("ComparisonNotDefinition.latte");
+
+        Assert.assertNotNull(problems);
+        LatteInspectionInfo undefined = problems.stream()
+            .filter(p -> p.getDescription().contains("ndefined variable 'a'"))
+            .findFirst().orElse(null);
+        Assert.assertNotNull("Expected undefined variable warning for comparison-only usage", undefined);
+    }
+
+    @Test
     public void testClosureParameter() throws IOException {
         List<LatteInspectionInfo> problems = getProblems("ClosureParameter.latte");
 

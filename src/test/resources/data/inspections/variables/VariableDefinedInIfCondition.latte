@@ -1,0 +1,13 @@
+{if $a = getSomething()}
+    {$a}
+{/if}
+{if $b = getOther()}
+    {$b}
+{elseif $c = getAnother()}
+    {$c}
+{/if}
+{block content}
+    {if $d = getValue()}
+        {$d}
+    {/if}
+{/block}

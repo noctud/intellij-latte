@@ -1,9 +1,10 @@
 # Changelog
 
-## [1.6.4] - Unreleased
+## [1.6.4] - 2026-03-25
 
 ### Fixed
 
+- Variable assignment in conditions not detected as definition
 - False "multiple definitions" and "probably undefined" warnings for variables defined in all branches of `{if}/{else}`
 
 ### Changed
