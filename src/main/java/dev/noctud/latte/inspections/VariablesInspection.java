@@ -105,6 +105,12 @@ public class VariablesInspection extends BaseLocalInspectionTool {
 
             for (LattePhpCachedVariable varDefinition : definitions) {
                 if (!varDefinition.matchElement(element) && varDefinition.getVariableContext() == element.getVariableContext()) {
+                    PsiElement context = element.getVariableContext();
+                    if (context != null && LattePhpCachedVariable.areInDifferentBranches(
+                        element.getElement(), varDefinition.getElement(), context
+                    )) {
+                        continue;
+                    }
                     problems.add(
                         LatteInspectionInfo.warning(variable, "Multiple definitions for variable '" + variableName + "'")
                     );

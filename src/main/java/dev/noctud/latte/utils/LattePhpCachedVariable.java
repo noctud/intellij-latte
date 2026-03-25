@@ -234,6 +234,112 @@ public class LattePhpCachedVariable {
         return text.equals("function") || text.equals("fn");
     }
 
+    /**
+     * Checks if two elements within the same context are in different branches
+     * of an if/else/elseif structure (separated by {else} or {elseif}).
+     */
+    public static boolean areInDifferentBranches(@NotNull PsiElement element1, @NotNull PsiElement element2, @NotNull PsiElement context) {
+        if (!(context instanceof LattePairMacro)) {
+            return false;
+        }
+
+        int offset1 = Math.min(element1.getTextOffset(), element2.getTextOffset());
+        int offset2 = Math.max(element1.getTextOffset(), element2.getTextOffset());
+
+        for (PsiElement child = context.getFirstChild(); child != null; child = child.getNextSibling()) {
+            int childOffset = child.getTextOffset();
+            if (childOffset <= offset1 || childOffset >= offset2) {
+                continue;
+            }
+
+            if (child instanceof LatteUnpairedMacro) {
+                String name = ((LatteUnpairedMacro) child).getMacroOpenTag().getMacroName();
+                if ("else".equals(name) || "elseif".equals(name) || "elseifset".equals(name)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if definitions in child contexts cover all branches of an if/else,
+     * meaning the variable is always defined after the if/else block.
+     * Requires a final {else} branch and at least one definition per branch.
+     */
+    public static boolean areDefinitionsInAllBranches(@NotNull List<LattePhpCachedVariable> definitions) {
+        if (definitions.isEmpty()) {
+            return false;
+        }
+
+        PsiElement firstContext = definitions.get(0).getVariableContext();
+        if (!(firstContext instanceof LattePairMacro)) {
+            return false;
+        }
+
+        for (LattePhpCachedVariable def : definitions) {
+            if (def.getVariableContext() != firstContext) {
+                return false;
+            }
+        }
+
+        LattePairMacro pairMacro = (LattePairMacro) firstContext;
+        LatteMacroTag openTag = pairMacro.getMacroOpenTag();
+        if (openTag == null) {
+            return false;
+        }
+
+        String macroName = openTag.getMacroName();
+        if (!"if".equals(macroName) && !"ifset".equals(macroName) && !"ifchanged".equals(macroName)) {
+            return false;
+        }
+
+        // Collect branch separator offsets and check if last separator is {else}
+        List<Integer> branchStartOffsets = new ArrayList<>();
+        branchStartOffsets.add(pairMacro.getTextOffset());
+        boolean lastBranchIsElse = false;
+
+        for (PsiElement child = pairMacro.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child instanceof LatteUnpairedMacro) {
+                String name = ((LatteUnpairedMacro) child).getMacroOpenTag().getMacroName();
+                if ("else".equals(name)) {
+                    branchStartOffsets.add(child.getTextOffset());
+                    lastBranchIsElse = true;
+                } else if ("elseif".equals(name) || "elseifset".equals(name)) {
+                    branchStartOffsets.add(child.getTextOffset());
+                    lastBranchIsElse = false;
+                }
+            }
+        }
+
+        // Must have a branch separator and the last branch must be {else}
+        if (branchStartOffsets.size() < 2 || !lastBranchIsElse) {
+            return false;
+        }
+
+        // Check each branch has at least one definition
+        boolean[] covered = new boolean[branchStartOffsets.size()];
+        for (LattePhpCachedVariable def : definitions) {
+            int defOffset = def.getPosition();
+            int branchIndex = 0;
+            for (int i = 1; i < branchStartOffsets.size(); i++) {
+                if (defOffset > branchStartOffsets.get(i)) {
+                    branchIndex = i;
+                }
+            }
+            covered[branchIndex] = true;
+        }
+
+        for (boolean c : covered) {
+            if (!c) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static boolean isSameOrParentContext(@Nullable PsiElement check, @Nullable PsiElement probablySameOrParent) {
         if (check == probablySameOrParent) {
             return true;

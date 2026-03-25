@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 public class LatteFile extends PsiFileBase {
 
     @Nullable Map<LattePhpVariableElement, LattePhpCachedVariable> variables = null;
-    @Nullable List<PsiElement> contexts = null;
-    @Nullable Map<PsiElement, List<LattePhpCachedVariable>> contextData = null;
     @Nullable List<LattePhpCachedVariable> sortedVariables = null;
     @Nullable NettePhpType templateType = null;
     @Nullable List<LattePhpClassUsage> templateTypes = null;
@@ -56,8 +54,6 @@ public class LatteFile extends PsiFileBase {
         sortedVariables = null;
         templateType = null;
         templateTypes = null;
-        contextData = null;
-        contexts = null;
         linkResolver.reset();
     }
 
@@ -126,9 +122,19 @@ public class LatteFile extends PsiFileBase {
         if (!sameContext.isEmpty()) {
             return sameContext;
         }
+
         if (!parentContext.isEmpty()) {
             return parentContext;
         }
+
+        // If child definitions cover all branches of an if/else, the variable
+        // is always defined — promote to definite (not probably undefined)
+        if (!childContext.isEmpty() && LattePhpCachedVariable.areDefinitionsInAllBranches(childContext)) {
+            for (LattePhpCachedVariable cv : childContext) {
+                cv.setProbablyUndefined(false);
+            }
+        }
+
         return childContext;
     }
 
@@ -179,24 +185,6 @@ public class LatteFile extends PsiFileBase {
             sortedVariables = allVariables.values().stream()
                 .sorted(Comparator.comparing(LattePhpCachedVariable::getPosition))
                 .collect(Collectors.toList());
-            //todo: load context dynamically
-			/*contextData = new HashMap<>();
-			contexts = new ArrayList<>();
-			for (LattePhpCachedVariable variable: sortedVariables) {
-				PsiElement context = variable.getVariableContext();
-				List<LattePhpCachedVariable> data = new ArrayList<>();
-				if (contextData.containsKey(context)) {
-					data.addAll(contextData.get(context));
-				}
-				contextData.replace(
-						context,
-						data.stream().sorted(Comparator.comparing(LattePhpCachedVariable::getPosition)).collect(Collectors.toList())
-				);
-				contexts.add(context);
-			}
-			contexts = contexts.stream()
-					.sorted(Comparator.comparing(PsiElement::getTextOffset))
-					.collect(Collectors.toList());*/
             variables = allVariables;
         }
     }

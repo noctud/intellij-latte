@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.4] - Unreleased
+
+### Fixed
+
+- False "multiple definitions" and "probably undefined" warnings for variables defined in all branches of `{if}/{else}`
+
+### Changed
+
+- Removed unused context caching dead code from `LatteFile`
+
 ## [1.6.3] - 2026-03-23
 
 ### Fixed

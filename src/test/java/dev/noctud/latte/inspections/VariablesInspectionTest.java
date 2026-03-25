@@ -127,6 +127,47 @@ public class VariablesInspectionTest extends BasePsiParsingTestCase {
     }
 
     @Test
+    public void testVariableDefinedInIfElse() throws IOException {
+        List<LatteInspectionInfo> problems = getProblems("VariableDefinedInIfElse.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
+    @Test
+    public void testVariableDefinedInIfOnly() throws IOException {
+        // Variable defined only in {if} (no {else}) — should warn as probably undefined
+        List<LatteInspectionInfo> problems = getProblems("VariableDefinedInIfOnly.latte");
+
+        Assert.assertNotNull(problems);
+        LatteInspectionInfo probablyUndefined = problems.stream()
+            .filter(p -> p.getDescription().contains("probably undefined"))
+            .findFirst().orElse(null);
+        Assert.assertNotNull("Expected 'probably undefined' warning", probablyUndefined);
+    }
+
+    @Test
+    public void testVariableDefinedInElseifNoElse() throws IOException {
+        // Variable defined in {if} and {elseif} but no final {else} — should warn
+        List<LatteInspectionInfo> problems = getProblems("VariableDefinedInElseifNoElse.latte");
+
+        Assert.assertNotNull(problems);
+        LatteInspectionInfo probablyUndefined = problems.stream()
+            .filter(p -> p.getDescription().contains("probably undefined"))
+            .findFirst().orElse(null);
+        Assert.assertNotNull("Expected 'probably undefined' warning without final {else}", probablyUndefined);
+    }
+
+    @Test
+    public void testVariableDefinedInAllElseifBranches() throws IOException {
+        // Variable defined in {if}, {elseif}, and {else} — all branches covered, no warning
+        List<LatteInspectionInfo> problems = getProblems("VariableDefinedInAllElseifBranches.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
+    @Test
     public void testClosureParameter() throws IOException {
         List<LatteInspectionInfo> problems = getProblems("ClosureParameter.latte");
 
