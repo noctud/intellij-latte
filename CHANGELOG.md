@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.5] - 2026-03-26
+
+### Fixed
+
+- Exception when viewing the settings form in the IDE
+
 ## [1.6.4] - 2026-03-25
 
 ### Fixed
