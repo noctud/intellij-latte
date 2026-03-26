@@ -64,23 +64,6 @@ public class LatteBlock extends TemplateLanguageBlock {
     }
 
     @Override
-    public Indent getIndent() {
-        // When an unpaired macro (like {$a}) appears inline with HTML text
-        // (e.g., "problem {$a}"), it must not contribute indentation — otherwise
-        // the XML formatter treats it as a block-level element and shifts
-        // subsequent lines deeper. We detect "inline" by checking if the
-        // previous AST sibling contains non-whitespace content, meaning there's
-        // text before the macro on the same line.
-        if (!isPair) {
-            ASTNode prev = getNode().getTreePrev();
-            if (prev != null && prev.getTextLength() > 0 && !prev.getText().trim().isEmpty()) {
-                return Indent.getNoneIndent();
-            }
-        }
-        return super.getIndent();
-    }
-
-    @Override
     protected Spacing getSpacing(TemplateLanguageBlock templateLanguageBlock) {
         return null;
     }
