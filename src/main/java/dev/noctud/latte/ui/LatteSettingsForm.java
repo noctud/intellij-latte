@@ -15,12 +15,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class LatteSettingsForm implements Configurable {
-    private JPanel panel1;
-    private JButton buttonHelp;
-    private JLabel logoLabel;
-    private JCheckBox enableNetteCheckBox;
-    private JCheckBox enableNetteFormsTagsCheckBox;
-    private JCheckBox enableLatteTagsAndCheckBox;
+    private @Nullable JPanel panel1;
+    private @Nullable JButton buttonHelp;
+    private @Nullable JLabel logoLabel;
+    private @Nullable JCheckBox enableNetteCheckBox;
+    private @Nullable JCheckBox enableNetteFormsTagsCheckBox;
+    private @Nullable JCheckBox enableLatteTagsAndCheckBox;
 
     private final Project project;
     private boolean changed = false;
@@ -28,35 +28,45 @@ public class LatteSettingsForm implements Configurable {
     public LatteSettingsForm(Project project) {
         this.project = project;
 
-        logoLabel.setIcon(LatteIcons.LOGO);
+        if (logoLabel != null) {
+            logoLabel.setIcon(LatteIcons.LOGO);
+        }
 
-        buttonHelp.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                LatteIdeHelper.openUrl(LatteConfiguration.LATTE_HELP_URL + "en/");
-            }
-        });
+        if (buttonHelp != null) {
+            buttonHelp.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    LatteIdeHelper.openUrl(LatteConfiguration.LATTE_HELP_URL + "en/");
+                }
+            });
+        }
 
-        enableNetteCheckBox.setSelected(getSettings().enableNette);
-        enableNetteCheckBox.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                LatteSettingsForm.this.changed = true;
-            }
-        });
+        if (enableNetteCheckBox != null) {
+            enableNetteCheckBox.setSelected(getSettings().enableNette);
+            enableNetteCheckBox.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    LatteSettingsForm.this.changed = true;
+                }
+            });
+        }
 
-        enableNetteFormsTagsCheckBox.setSelected(getSettings().enableNetteForms);
-        enableNetteFormsTagsCheckBox.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                LatteSettingsForm.this.changed = true;
-            }
-        });
+        if (enableNetteFormsTagsCheckBox != null) {
+            enableNetteFormsTagsCheckBox.setSelected(getSettings().enableNetteForms);
+            enableNetteFormsTagsCheckBox.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    LatteSettingsForm.this.changed = true;
+                }
+            });
+        }
 
-        enableLatteTagsAndCheckBox.setEnabled(false);
+        if (enableLatteTagsAndCheckBox != null) {
+            enableLatteTagsAndCheckBox.setEnabled(false);
+        }
     }
 
     @Nls
@@ -84,6 +94,10 @@ public class LatteSettingsForm implements Configurable {
 
     @Override
     public void apply() throws ConfigurationException {
+        if (enableNetteCheckBox == null || enableNetteFormsTagsCheckBox == null) {
+            return;
+        }
+
         getSettings().enableNette = enableNetteCheckBox.isSelected();
         getSettings().enableNetteForms = enableNetteFormsTagsCheckBox.isSelected();
 
