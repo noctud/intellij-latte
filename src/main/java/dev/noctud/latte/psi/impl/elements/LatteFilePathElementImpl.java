@@ -61,7 +61,11 @@ public abstract class LatteFilePathElementImpl extends LattePsiElementImpl imple
 
                         @Override
                         public @Nullable PsiElement resolve() {
-                            VirtualFile virtual = VirtualFileManager.getInstance().findFileByUrl("file://" + myElement.getContainingFile().getContainingDirectory().getVirtualFile().getPath() + path);
+                            PsiDirectory containingDir = myElement.getContainingFile().getContainingDirectory();
+                            if (containingDir == null) {
+                                return null;
+                            }
+                            VirtualFile virtual = VirtualFileManager.getInstance().findFileByUrl("file://" + containingDir.getVirtualFile().getPath() + path);
                             if (virtual == null) {
                                 return null;
                             }
@@ -76,7 +80,11 @@ public abstract class LatteFilePathElementImpl extends LattePsiElementImpl imple
 
                         @Override
                         public Object @NotNull [] getVariants() {
-                            String target = "file://" + getContainingFile().getOriginalFile().getContainingDirectory().getVirtualFile().getPath() + directoryPath;
+                            PsiDirectory variantsDir = getContainingFile().getOriginalFile().getContainingDirectory();
+                            if (variantsDir == null) {
+                                return new Object[0];
+                            }
+                            String target = "file://" + variantsDir.getVirtualFile().getPath() + directoryPath;
                             if (target.endsWith("/")) {
                                 target = target.substring(0, target.length() - 1);
                             }
