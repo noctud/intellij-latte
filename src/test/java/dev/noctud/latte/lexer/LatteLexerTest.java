@@ -156,6 +156,73 @@ public class LatteLexerTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	public void testSyntaxOff() throws Exception {
+		Lexer lexer = new LatteLexer();
+
+		lexer.start("{syntax off}raw {$var} text{/syntax}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_NAME, "syntax"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_IDENTIFIER, "off"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+			Pair.create(T_TEXT, "raw {$var} text"),
+			Pair.create(T_MACRO_CLOSE_TAG_OPEN, "{/"),
+			Pair.create(T_MACRO_NAME, "syntax"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testSyntaxDouble() throws Exception {
+		Lexer lexer = new LatteLexer();
+
+		lexer.start("{syntax double}{{$var}}{/syntax}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_NAME, "syntax"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_IDENTIFIER, "double"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$var"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}}"),
+			Pair.create(T_MACRO_CLOSE_TAG_OPEN, "{/"),
+			Pair.create(T_MACRO_NAME, "syntax"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testSyntaxDoubleSingleBraceBecomesText() throws Exception {
+		Lexer lexer = new LatteLexer();
+
+		// Single-brace {$test} inside {syntax double} must be plain T_TEXT, not a macro
+		lexer.start("{syntax double}{$test}{{$working}}{/syntax}");
+		assertTokens(lexer, new Pair[] {
+			// {syntax double} opening tag
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_NAME, "syntax"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_IDENTIFIER, "double"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+			// {$test} is T_TEXT - NOT a macro
+			Pair.create(T_TEXT, "{$test}"),
+			// {{$working}} IS a macro (double braces)
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$working"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}}"),
+			// {/syntax} closing tag (single braces - Latte uses original delimiters)
+			Pair.create(T_MACRO_CLOSE_TAG_OPEN, "{/"),
+			Pair.create(T_MACRO_NAME, "syntax"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	public void testFileImport() throws Exception {
 		Lexer lexer = new LatteLexer();
 

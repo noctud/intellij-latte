@@ -19,16 +19,34 @@ import static dev.noctud.latte.psi.LatteTypes.*;
 
 NAME_FULL = [a-zA-Z][a-zA-Z0-9_]* ([.:][a-zA-Z0-9_]+)*
 
+%{
+	private boolean doubleBraceMode = false;
+%}
+
 %%
 <YYINITIAL> {
-	"{" {
+	"{{/" {
+		doubleBraceMode = true;
+		yybegin(NAME_NOT_Q);
+		return T_MACRO_CLOSE_TAG_OPEN;
+	}
+
+	"{{" {
+		doubleBraceMode = true;
 		yybegin(NAME_ANY);
 		return T_MACRO_OPEN_TAG_OPEN;
 	}
 
 	"{/" {
+		doubleBraceMode = false;
 		yybegin(NAME_NOT_Q);
 		return T_MACRO_CLOSE_TAG_OPEN;
+	}
+
+	"{" {
+		doubleBraceMode = false;
+		yybegin(NAME_ANY);
+		return T_MACRO_OPEN_TAG_OPEN;
 	}
 }
 
@@ -64,12 +82,34 @@ NAME_FULL = [a-zA-Z][a-zA-Z0-9_]* ([.:][a-zA-Z0-9_]+)*
 }
 
 <NAME_ANY, NAME_NOT_Q, NAME_SHORT, ARGS> {
+	"}}" {
+		if (doubleBraceMode) {
+			yybegin(ARGS);
+			return T_MACRO_TAG_CLOSE;
+		}
+		// In single-brace mode, first } is content (matching "}" / [^] behavior)
+		yypushback(1);
+		yybegin(ARGS);
+		return T_MACRO_CONTENT;
+	}
+
 	"}" {
 		yybegin(ARGS);
 		return T_MACRO_TAG_CLOSE;
 	}
 
 	"}" / [^] {
+		yybegin(ARGS);
+		return T_MACRO_CONTENT;
+	}
+
+	"/}}" {
+		if (doubleBraceMode) {
+			yybegin(ARGS);
+			return T_MACRO_TAG_CLOSE_EMPTY;
+		}
+		// In single-brace mode, /} is content (matching "/}" / [^] behavior)
+		yypushback(1);
 		yybegin(ARGS);
 		return T_MACRO_CONTENT;
 	}

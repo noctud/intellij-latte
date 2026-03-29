@@ -108,7 +108,7 @@ public class LatteDefaultConfiguration {
         addLatteTag(multiTag("snippetArea", LatteTagSettings.Type.PAIR, requiredArgument("name", "string", LatteArgumentSettings.Type.PHP_IDENTIFIER, LatteArgumentSettings.Type.PHP_EXPRESSION)));
         addLatteTag(tag("spaceless", LatteTagSettings.Type.PAIR));
         addLatteTag(multiTag("switch", LatteTagSettings.Type.PAIR, argument("expression", LatteArgumentSettings.Type.PHP_EXPRESSION)));
-        addLatteTag(multiTag("syntax", LatteTagSettings.Type.PAIR, "off | double | latte"));
+        addLatteTag(multiTag("syntax", LatteTagSettings.Type.PAIR, "off | double | single"));
         addLatteTag(tag("templatePrint", LatteTagSettings.Type.UNPAIRED, argument("class-name", LatteArgumentSettings.Type.PHP_CLASS_NAME)));
         addLatteTag(tag("templateType", LatteTagSettings.Type.UNPAIRED, requiredArgument("class-name", LatteArgumentSettings.Type.PHP_CLASS_NAME)));
         addLatteTag(tag("try", LatteTagSettings.Type.PAIR));

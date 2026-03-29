@@ -15,10 +15,14 @@ import dev.noctud.latte.intentions.AddCustomPairMacro;
 import dev.noctud.latte.intentions.AddCustomUnpairedMacro;
 import dev.noctud.latte.psi.*;
 
+import java.util.Set;
+
 /**
  * Annotator is mostly used to check semantic rules which can not be easily checked during parsing.
  */
 public class LatteAnnotator implements Annotator {
+    private static final Set<String> VALID_SYNTAX_MODES = Set.of("off", "double", "single");
+
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof LatteMacroClassic) {
@@ -64,6 +68,19 @@ public class LatteAnnotator implements Annotator {
         } else if (prefixed && macro.getType() != LatteTagSettings.Type.PAIR && macro.getType() != LatteTagSettings.Type.AUTO_EMPTY) {
             createErrorAnnotation(holder, attrName, "Attribute tag n:" + tagName + " can not be used with prefix.");
         }
+
+        if (tagName.equals("syntax")) {
+            LatteNetteAttrValue attrValue = element.getAttrValue();
+            if (attrValue != null) {
+                LatteMacroContent content = attrValue.getMacroContent();
+                if (content != null) {
+                    String mode = content.getText().trim();
+                    if (!VALID_SYNTAX_MODES.contains(mode)) {
+                        createErrorAnnotation(holder, content, "Invalid syntax mode '" + mode + "'. Expected: off, double, or single");
+                    }
+                }
+            }
+        }
     }
 
     private void checkMacroClassic(@NotNull LatteMacroClassic element, @NotNull AnnotationHolder holder) {
@@ -98,6 +115,10 @@ public class LatteAnnotator implements Annotator {
             }
         }
 
+        if (openTagName.equals("syntax")) {
+            checkSyntaxModeArgument(openTag, holder);
+        }
+
         String closeTagName = closeTag != null ? closeTag.getMacroName() : null;
         if (closeTagName != null && !closeTagName.isEmpty() && !closeTagName.equals(openTagName)) {
             createErrorAnnotation(holder, closeTag, "Unexpected {/" + closeTagName + "}, expected {/" + openTagName + "}");
@@ -129,6 +150,18 @@ public class LatteAnnotator implements Annotator {
             if (!macro.isTagBlock() || unclosed[0] > 0) {
                 createErrorAnnotation(holder, openTag, "Unclosed tag " + openTagName);
             }
+        }
+    }
+
+    private void checkSyntaxModeArgument(@NotNull LatteMacroTag tag, @NotNull AnnotationHolder holder) {
+        LatteMacroContent content = tag.getMacroContent();
+        if (content == null) {
+            createErrorAnnotation(holder, tag, "Missing syntax mode. Expected: off, double, or single");
+            return;
+        }
+        String mode = content.getText().trim();
+        if (!VALID_SYNTAX_MODES.contains(mode)) {
+            createErrorAnnotation(holder, content, "Invalid syntax mode '" + mode + "'. Expected: off, double, or single");
         }
     }
 

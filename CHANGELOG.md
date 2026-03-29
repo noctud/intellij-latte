@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0] - Unreleased
+
+### Added
+
+- Support for `{syntax off}...{/syntax}` — disables Latte macro parsing inside the block
+- Support for `{syntax double}...{/syntax}` — switches macro delimiters to `{{...}}`
+- Support for `n:syntax="off"` and `n:syntax="double"` attributes on HTML elements
+
+### Fixed
+
+- NPE in file path resolution for virtual directories
+
 ## [1.6.5] - 2026-03-26
 
 ### Fixed
