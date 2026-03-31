@@ -1,4 +1,4 @@
-Latte for PhpStorm and IntelliJ Idea
+Latte for PhpStorm and IntelliJ IDEA
 =========================================
 [![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/24218-latte-support.svg?label=marketplace)](https://plugins.jetbrains.com/plugin/24218-latte-support)
 [![Build](https://img.shields.io/github/actions/workflow/status/noctud/intellij-latte/build.yaml?branch=main)](https://github.com/noctud/intellij-latte/actions)
@@ -6,7 +6,7 @@ Latte for PhpStorm and IntelliJ Idea
 [![Discord](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.noctud.dev)
 
 <!-- Plugin description -->
-Provides comprehensive support for the [Latte](https://latte.nette.org) templating engine in PhpStorm and IntelliJ IDEA. Includes syntax highlighting, code completion for PHP expressions inside templates, type-aware references to classes, methods, and properties via [{templateType}](https://latte.nette.org/type-system#toc-templatetype), refactoring across Latte and PHP files, live inspections for undefined variables, missing files, deprecated tags, and more. Supports custom tags, filters, and functions configuration per project.
+Provides comprehensive support for the [Latte](https://latte.nette.org) templating engine in PhpStorm and IntelliJ IDEA. Includes syntax highlighting, code completion, type-aware references via [{templateType}](https://latte.nette.org/type-system#toc-templatetype), navigation from `{link}` to presenter actions and `{control}` to components, live inspections, refactoring across Latte and PHP files, and configurable custom tags, filters, and functions per project.
 
 If you have any problems with the plugin, [create an issue](https://github.com/noctud/intellij-latte/issues/new/choose) or join the [Noctud Discord](https://discord.noctud.dev).
 <!-- Plugin description end -->
@@ -42,6 +42,7 @@ Supported Features
 * Code folding, brace matching, and structure view
 * Configurable custom tags, filters, functions, and variables per project
 * Live templates for common Latte constructs
+* Support for `{syntax off}`, `{syntax double}`, and `n:syntax` attributes
 
 
 Building
