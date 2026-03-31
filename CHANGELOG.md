@@ -11,6 +11,7 @@
 ### Fixed
 
 - NPE in file path resolution for virtual directories
+- IllegalStateException when creating a new Latte file
 
 ## [1.6.5] - 2026-03-26
 

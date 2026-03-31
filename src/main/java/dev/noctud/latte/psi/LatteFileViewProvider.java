@@ -77,11 +77,15 @@ public class LatteFileViewProvider extends MultiplePsiFilesPerDocumentFileViewPr
     }
 
     private boolean isXml() {
-        String text = getContents().toString();
-        int pos = text.indexOf("\n");
-        if (pos > 0) {
-            text = text.substring(0, pos);
+        try {
+            String text = getContents().toString();
+            int pos = text.indexOf("\n");
+            if (pos > 0) {
+                text = text.substring(0, pos);
+            }
+            return xmlContentType.matcher(text).matches();
+        } catch (Exception e) {
+            return false;
         }
-        return xmlContentType.matcher(text).matches();
     }
 }
