@@ -1,0 +1,10 @@
+{
+	"autoload": {
+		"psr-4": {
+			"IdeaLatteSupport\\": ["src/"]
+		}
+	},
+	"require": {
+		"latte/latte": "^3.0"
+	}
+}

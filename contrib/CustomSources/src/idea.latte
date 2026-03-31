@@ -1,0 +1,21 @@
+{contentType xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+	<component name="LattePluginSettings">
+		<customMacroSettings>
+			<list>
+				<LatteTagSettings n:foreach="$macros as $name => $type" n:attr="MacroType: $type" MacroName="{$name}" />
+			</list>
+		</customMacroSettings>
+		<customModifierSettings>
+			<list>
+				<LatteFilterSettings n:foreach="$filters as $name => $info" ModifierName="{$name}" ModifierHelp="{$info[params]}" />
+			</list>
+		</customModifierSettings>
+		<customFunctionSettings>
+			<list>
+				<LatteFunctionSettings n:foreach="$functions as $name => $info" FunctionReturnType="{$info[returns]}" FunctionName="{$name}" FunctionHelp="({$info[params]})" />
+			</list>
+		</customFunctionSettings>
+	</component>
+</project>
