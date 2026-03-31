@@ -11,7 +11,7 @@ Provides comprehensive support for the [Latte](https://latte.nette.org) templati
 If you have any problems with the plugin, [create an issue](https://github.com/noctud/intellij-latte/issues/new/choose) or join the [Noctud Discord](https://discord.noctud.dev).
 <!-- Plugin description end -->
 
-![example](https://i.imgur.com/KjIAx90.gif)
+![Example](.github/showcase.gif)
 
 
 Notice
