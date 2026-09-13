@@ -36,6 +36,7 @@ public class ContentTypeChangedInAnOpenFileTest extends BasePlatformTestCase {
         myFixture.doHighlighting();
         myFixture.configureByText("page.latte", XML);
         myFixture.doHighlighting();
+        assertEquals(XMLLanguage.INSTANCE, dataLanguageOf());
     }
 
     public void testAnXmlTemplateFollowedByAnHtmlOneUnderTheSameName() {
@@ -43,6 +44,7 @@ public class ContentTypeChangedInAnOpenFileTest extends BasePlatformTestCase {
         myFixture.doHighlighting();
         myFixture.configureByText("page.latte", HTML);
         myFixture.doHighlighting();
+        assertEquals(HTMLLanguage.INSTANCE, dataLanguageOf());
     }
 
     /** The shape from the editor: the tag is typed into a template that is already open. */
@@ -55,6 +57,7 @@ public class ContentTypeChangedInAnOpenFileTest extends BasePlatformTestCase {
         PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
 
         myFixture.doHighlighting();
+        assertEquals(XMLLanguage.INSTANCE, dataLanguageOf());
     }
 
     /** And taken away again, which is the same move in the other direction. */
@@ -67,6 +70,7 @@ public class ContentTypeChangedInAnOpenFileTest extends BasePlatformTestCase {
         PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
 
         myFixture.doHighlighting();
+        assertEquals(HTMLLanguage.INSTANCE, dataLanguageOf());
     }
 
     /**

@@ -47,13 +47,16 @@ public abstract class LatteControlPartElementImpl extends LattePsiElementImpl im
      * in a field cleared by our own {@link #subtreeChanged()} - an edit in a sibling never reaches
      * it. The platform also asks for them from several threads at once, which a lazily populated
      * field cannot survive.
+     *
+     * <p>A copy goes out rather than the cached array itself: a caller that sorts or rewrites what
+     * it is handed would otherwise change the answer for everyone after it.
      */
     @Override
     public PsiReference @NotNull [] getReferences() {
         return CachedValuesManager.getCachedValue(
             this,
             () -> CachedValueProvider.Result.create(computeReferences(), this)
-        );
+        ).clone();
     }
 
     private PsiReference @NotNull [] computeReferences() {

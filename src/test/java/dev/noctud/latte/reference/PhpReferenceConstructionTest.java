@@ -7,6 +7,7 @@ import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import dev.noctud.latte.BasePsiParsingTestCase;
 import dev.noctud.latte.config.LatteConfiguration;
+import dev.noctud.latte.php.LattePhpUtil;
 import dev.noctud.latte.psi.LattePhpClassUsage;
 import dev.noctud.latte.psi.LattePhpConstant;
 import dev.noctud.latte.psi.LattePhpMethod;
@@ -112,12 +113,22 @@ public class PhpReferenceConstructionTest extends BasePsiParsingTestCase {
         }
     }
 
+    /**
+     * The lookup is recognised by the frame it fails in, not by what the failure says: the mock
+     * project has no {@code PhpIndex}, so whatever is thrown carries our own call to it in its
+     * stack. Matching the message instead would tie the test to wording nobody here owns.
+     */
     private boolean readsPhpIndex(Runnable action) {
         try {
             action.run();
             return false;
         } catch (Throwable t) {
-            return String.valueOf(t.getMessage()).contains("PhpIndex");
+            for (StackTraceElement frame : t.getStackTrace()) {
+                if (LattePhpUtil.class.getName().equals(frame.getClassName())) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

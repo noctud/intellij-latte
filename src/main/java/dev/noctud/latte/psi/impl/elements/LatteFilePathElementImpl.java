@@ -47,13 +47,16 @@ public abstract class LatteFilePathElementImpl extends LattePsiElementImpl imple
     /**
      * The platform asks for the references from several threads at once, which a lazily populated
      * field cannot survive - the second thread is handed a list the first one is still filling.
+     *
+     * <p>A copy goes out rather than the cached array itself: a caller that sorts or rewrites what
+     * it is handed would otherwise change the answer for everyone after it.
      */
     @Override
     public PsiReference @NotNull [] getReferences() {
         return CachedValuesManager.getCachedValue(
             this,
             () -> CachedValueProvider.Result.create(computeReferences(), this)
-        );
+        ).clone();
     }
 
     private PsiReference @NotNull [] computeReferences() {

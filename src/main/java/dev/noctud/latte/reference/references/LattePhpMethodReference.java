@@ -46,7 +46,7 @@ public class LattePhpMethodReference extends PsiReferenceBase<PsiElement> implem
     }
 
     @NotNull
-    public ResolveResult[] multiResolveMethod() {
+    private ResolveResult[] multiResolveMethod() {
         Collection<PhpClass> phpClasses = getPhpClasses();
         if (phpClasses.size() == 0) {
             return new ResolveResult[0];
@@ -72,7 +72,7 @@ public class LattePhpMethodReference extends PsiReferenceBase<PsiElement> implem
     }
 
     @NotNull
-    public ResolveResult[] multiResolveFunction() {
+    private ResolveResult[] multiResolveFunction() {
         List<ResolveResult> results = new ArrayList<>();
 
         Collection<Function> phpFunctions = LattePhpUtil.getFunctionByName(project, methodName);

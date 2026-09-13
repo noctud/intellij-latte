@@ -1,6 +1,7 @@
 package dev.noctud.latte.psi;
 
 import com.intellij.lang.html.HTMLLanguage;
+import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
@@ -42,11 +43,22 @@ public class LatteFileViewProviderTest extends BasePsiParsingTestCase {
         assertFalse(LatteFileViewProvider.detectXmlContentType(""));
     }
 
-    public void testProviderDefaultsToHtmlWhenNoDocumentCached() {
-        // On EDT without a cached Document we intentionally skip VFS I/O and fall back to HTML.
-        LightVirtualFile vf = new LightVirtualFile("test.latte", LatteLanguage.INSTANCE, "<html></html>");
+    public void testProviderReadsTheDataLanguageFromItsOwnContents() {
+        assertSame(HTMLLanguage.INSTANCE, dataLanguageOf("<html></html>"));
+    }
+
+    /**
+     * The same question the other way round. The provider used to answer HTML here whatever the
+     * text said, because reading it meant VFS I/O and that was refused on EDT; it reads its own
+     * contents now, so a content type in the text is seen wherever the question is asked.
+     */
+    public void testProviderReadsXmlFromItsOwnContents() {
+        assertSame(XMLLanguage.INSTANCE, dataLanguageOf("{contentType application/xml}\n<root/>"));
+    }
+
+    private com.intellij.lang.Language dataLanguageOf(String text) {
+        LightVirtualFile vf = new LightVirtualFile("test.latte", LatteLanguage.INSTANCE, text);
         vf.setCharset(CharsetToolkit.UTF8_CHARSET);
-        LatteFileViewProvider provider = new LatteFileViewProvider(PsiManager.getInstance(getProject()), vf, false);
-        assertSame(HTMLLanguage.INSTANCE, provider.getTemplateDataLanguage());
+        return new LatteFileViewProvider(PsiManager.getInstance(getProject()), vf, false).getTemplateDataLanguage();
     }
 }
