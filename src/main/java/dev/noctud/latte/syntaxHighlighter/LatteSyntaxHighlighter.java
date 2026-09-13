@@ -124,7 +124,7 @@ public class LatteSyntaxHighlighter extends SyntaxHighlighterBase {
         } else if (token == LatteTypes.T_MACRO_ARGS_NUMBER) {
             return pack(MACRO_ARGS_NUMBER);
 
-        } else if (token == LatteTypes.T_MACRO_COMMENT) {
+        } else if (token == LatteTypes.T_MACRO_COMMENT || token == LatteTypes.T_PHP_COMMENT) {
             return pack(MACRO_COMMENT);
 
         } else if (token == LatteTypes.T_BLOCK_NAME) {

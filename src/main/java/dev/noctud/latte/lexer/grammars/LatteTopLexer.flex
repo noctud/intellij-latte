@@ -34,6 +34,7 @@ import static dev.noctud.latte.psi.LatteTypes.*;
 %state SYNTAX_DOUBLE
 %state SYNTAX_OFF_NATTR
 %state SYNTAX_DOUBLE_NATTR
+%state MACRO_BODY
 
 %{
 	private String lastNAttrName = null;
@@ -42,11 +43,28 @@ import static dev.noctud.latte.psi.LatteTypes.*;
 	private String currentTagName = null;
 	private String syntaxOffTagName = null;
 	private int syntaxOffNestingDepth = 0;
+	private int macroNestingDepth = 0;
+
+	/**
+	 * Depth at which a tag is closed where it stands instead of being followed further. Real code
+	 * nests a handful of levels inside one tag, so this is never reached by a template; a run
+	 * deeper than this only happens on broken input, where following it to the end of the file
+	 * would hand the parser a single tag holding the whole file - which it parses in quadratic
+	 * time. Closing early puts such input back where it was before braces were counted at all.
+	 *
+	 * The number is a guard against that quadratic parse and nothing else - lexing is linear with
+	 * it and without it (measured: 0.1-0.2 ms over 4 000 braces either way). It was 16, which is
+	 * comfortably above what a template writes and comfortably below what a hand-written {php}
+	 * block may legitimately reach: seventeen levels of nesting is unusual PHP but it is correct
+	 * PHP, and at 16 it was lexed wrongly. Raising it to 128 keeps the guard - without one, 4 000
+	 * braces take twelve seconds - and buys back the correctness in between.
+	 */
+	private static final int MAX_MACRO_NESTING_DEPTH = 128;
 %}
 
 WHITE_SPACE=[ \t\r\n]+
 MACRO_COMMENT = "{*" ~"*}"
-MACRO_CLASSIC = "{" [^ \t\r\n'\"{}] ({MACRO_STRING} | "{" {MACRO_STRING}* "}")*  ("'" ("\\" [^] | [^'\\])* | "\"" ("\\" [^] | [^\"\\])*)? "}"?
+MACRO_OPEN = "{" [^ \t\r\n'\"{}]
 SYNTAX_OFF_MACRO = "{syntax" [ \t]+ "off" [ \t]* "}"
 SYNTAX_DOUBLE_MACRO = "{syntax" [ \t]+ "double" [ \t]* "}"
 SYNTAX_CLOSE_MACRO = "{/syntax}"
@@ -57,6 +75,14 @@ MACRO_STRING = {MACRO_STRING_SQ} | {MACRO_STRING_DQ} | {MACRO_STRING_UQ}
 MACRO_STRING_SQ = "'" ("\\" [^] | [^'\\])* "'"
 MACRO_STRING_DQ = "\"" ("\\" [^] | [^\"\\])* "\""
 MACRO_STRING_UQ = [^'\"{}]
+PHP_BLOCK_COMMENT = "/*" ~"*/"
+// Latte itself knows no line comment inside a tag - its TagLexer matches only /* ... */, and a
+// '//' or a '#' there is a syntax error. This is not modelling one, then: it is keeping a quote
+// written inside such a run from reaching across the tag. The closing brace is left out of the
+// run on purpose, so that the run can never take the brace the tag ends at - which is what tells
+// this apart from a real line comment, and what keeps {link //Presenter:action}, {include #block}
+// and a fragment written as {link Presenter:action#anchor} ending where they are written to end.
+PHP_LINE_COMMENT = ("//" | "#") [^\r\n}]*
 
 %%
 <YYINITIAL> {
@@ -81,8 +107,81 @@ MACRO_STRING_UQ = [^'\"{}]
 		return T_MACRO_CLASSIC;
 	}
 
-	{MACRO_CLASSIC} {
+	// Only the opening of the tag is matched here; MACRO_BODY reads the rest and returns the
+	// token. The action returns nothing, so the tag keeps growing until the body closes it - the
+	// resulting T_MACRO_CLASSIC spans everything matched in between.
+	{MACRO_OPEN} {
+		macroNestingDepth = 1;
+		pushState(MACRO_BODY);
+	}
+}
+
+// Body of a classic macro. Braces are counted rather than matched by a pattern, so a block nested
+// to any depth - a {php} body, a closure inside a closure - stays part of the tag. A quoted
+// literal is taken whole, which keeps a brace inside it from being counted at all.
+<MACRO_BODY> {
+	// A PHP block comment is content as a whole, before anything in it is read as PHP. An
+	// apostrophe in it is ordinary English - "isn't", "don't" - and taken as the start of a literal
+	// it paired with the next quote written anywhere below, across the brace closing the tag: from
+	// that comment down the template stopped being HTML and became one tag.
+	{PHP_BLOCK_COMMENT} {
+	}
+
+	// The same containment for a run started by '//' or '#'. An apostrophe in "it isn't reset"
+	// paired with the next quote written anywhere below, and that pairing spanned the brace
+	// closing the tag: from that line down the template stopped being HTML and became one tag.
+	// Latte reports one error at the apostrophe and the tag still ends; this keeps the damage
+	// that small instead of letting one mistyped line take the rest of the file with it.
+	{PHP_LINE_COMMENT} {
+	}
+
+	{MACRO_STRING_SQ} | {MACRO_STRING_DQ} {
+	}
+
+	// A quote that opens no complete literal - the state the editor lexes while one is being
+	// typed. It is content on its own, so that the braces after it keep being counted and the tag
+	// still ends where it is written to end; a tag with no closing brace after it runs to the end
+	// of the input as any unclosed tag does. Read instead as a literal running to the end of the
+	// input, it took the rest of the template with it. This is the rule the macro content lexer
+	// is built on as well.
+	['\"] {
+	}
+
+	"{" {
+		macroNestingDepth++;
+		if (macroNestingDepth > MAX_MACRO_NESTING_DEPTH) {
+			popState();
+			return T_MACRO_CLASSIC;
+		}
+	}
+
+	"}" {
+		macroNestingDepth--;
+		if (macroNestingDepth == 0) {
+			popState();
+			return T_MACRO_CLASSIC;
+		}
+	}
+
+	// An unclosed tag ends with the file; the editor sees that on every keystroke. The state is
+	// left before returning so that the end of input is reported once and the scan terminates.
+	<<EOF>> {
+		popState();
 		return T_MACRO_CLASSIC;
+	}
+
+	// The slash and the hash are left out so that a match can start on one: taken as an ordinary
+	// character either was swallowed by the run before it and the comment above never got the
+	// chance to open.
+	[^{}'\"/#]+ {
+	}
+
+	// A slash that opens no comment - a division, a path written in a link tag.
+	"/" {
+	}
+
+	// A hash that opens no run - it is left in the tag as ordinary content the way it always was.
+	"#" {
 	}
 }
 

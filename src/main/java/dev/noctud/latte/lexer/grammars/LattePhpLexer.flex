@@ -14,6 +14,7 @@ import static dev.noctud.latte.psi.LatteTypes.*;
 
 %state SINGLE_QUOTED
 %state DOUBLE_QUOTED
+%state DOUBLE_QUOTED_INTERPOLATION
 %state MACRO_FILTERS
 %state PHP_TYPE_PART
 %state CLASS_REFERENCE
@@ -29,6 +30,12 @@ NUMBER = [+-]?[0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?
 
 // identifiers
 IDENTIFIER=[\p{L}_][\p{L}0-9_]*
+// The only comment Latte knows inside a tag: its TagLexer matches this and has no rule for a
+// line comment at all, so this is the whole of what there is to model. Taken as a whole before
+// anything in it is read as PHP, an apostrophe in ordinary English - "isn't", "don't" - opens
+// no literal. An unterminated one does not match and stays ordinary content, which is the state
+// the editor lexes while the comment is still being typed.
+PHP_BLOCK_COMMENT = "/*" ~"*/"
 CLASS_NAME=\\?[a-zA-Z_][a-zA-Z0-9_]*\\[a-zA-Z_][a-zA-Z0-9_\\]* | \\[a-zA-Z_][a-zA-Z0-9_]*
 CONTENT_TYPE=[a-zA-Z\-][a-zA-Z0-9\-]*\/[a-zA-Z\-][a-zA-Z0-9\-\.]*
 FILE_IMPORT=[\w\-.@()#$%\^&*()!\/]+ ".latte"
@@ -213,6 +220,10 @@ AS="as"
         return T_PHP_IDENTIFIER;
     }
 
+    {PHP_BLOCK_COMMENT} {
+        return T_PHP_COMMENT;
+    }
+
     "'"  {
     	pushState(SINGLE_QUOTED);
     	return T_PHP_SINGLE_QUOTE_LEFT;
@@ -322,19 +333,31 @@ AS="as"
 
 <SINGLE_QUOTED> {
 	"'" {
-		pushState(YYINITIAL);
+		yybegin(YYINITIAL);
 		return T_PHP_SINGLE_QUOTE_RIGHT;
 	}
 
-	// Safe break for unterminated string on macro close or line break
-	"}" | "\r\n" | "\n" {
-		pushState(YYINITIAL);
-		yypushback(yytext().length());
+	// A brace the literal closes after is what the literal says, never the end of the tag -
+	// Latte compiles {= '&#125;'} - so it is content. This was already true wherever the literal
+	// had something in front of the brace, because the content run below is the longer match
+	// there; only a brace opening the rest of the literal reached the safe break, and there it
+	// turned the closing quote into an opening one.
+	"}" / ([^'] * "'") {
 		return T_MACRO_ARGS_STRING;
 	}
 
+	// Safe break for an unterminated string: the macro closer ends it. A line break does not -
+	// a literal spanning lines is valid PHP and breaking on it turned the closing quote into an
+	// opening one, so the rest of the arguments was read as string content.
+	// No token is returned, the pushed-back '}' is read by YYINITIAL as the macro closer;
+	// returning one here produced a zero-length token.
+	"}" {
+		yybegin(YYINITIAL);
+		yypushback(1);
+	}
+
 	<<EOF>> {
-		pushState(YYINITIAL);
+		yybegin(YYINITIAL);
 		return T_MACRO_ARGS_STRING;
 	}
 
@@ -349,19 +372,30 @@ AS="as"
 
 <DOUBLE_QUOTED> {
 	"\"" {
-		pushState(YYINITIAL);
+		yybegin(YYINITIAL);
 		return T_PHP_DOUBLE_QUOTE_RIGHT;
 	}
 
-	// Safe break for unterminated string on macro close or line break
-	"}" | "\r\n" | "\n" {
-		pushState(YYINITIAL);
-		yypushback(yytext().length());
+	// An interpolated expression opens here; its own '}' must not be mistaken for the macro
+	// closer, so it is read in a state of its own.
+	"{" {
+		yybegin(DOUBLE_QUOTED_INTERPOLATION);
 		return T_MACRO_ARGS_STRING;
 	}
 
+	// A brace the literal closes after is content, exactly as in SINGLE_QUOTED.
+	"}" / ([^\"] * "\"") {
+		return T_MACRO_ARGS_STRING;
+	}
+
+	// Safe break for an unterminated string - see SINGLE_QUOTED for why a line break is not one.
+	"}" {
+		yybegin(YYINITIAL);
+		yypushback(1);
+	}
+
 	<<EOF>> {
-		pushState(YYINITIAL);
+		yybegin(YYINITIAL);
 		return T_MACRO_ARGS_STRING;
 	}
 
@@ -369,7 +403,9 @@ AS="as"
 		return T_FILE_PATH;
 	}
 
-	("\\" [^] | [^\"\\$])+ {
+	// A '}' is ordinary content once the string has some, exactly as in SINGLE_QUOTED: only a
+	// brace that opens the remaining content reaches the safe break above.
+	("\\" [^] | [^\"\\${])+ {
 		return T_MACRO_ARGS_STRING;
 	}
 
@@ -380,4 +416,32 @@ AS="as"
     "$" {
 		return T_MACRO_ARGS_STRING;
     }
+}
+
+// Inside "{...}" of a double-quoted string. Only the closing brace leaves; everything else is
+// string content, so a '}' here can never be read as the end of the macro.
+<DOUBLE_QUOTED_INTERPOLATION> {
+	"}" {
+		yybegin(DOUBLE_QUOTED);
+		return T_MACRO_ARGS_STRING;
+	}
+
+	// Unterminated interpolation - the string ends with its quote, not inside the braces.
+	"\"" {
+		yybegin(YYINITIAL);
+		return T_PHP_DOUBLE_QUOTE_RIGHT;
+	}
+
+	<<EOF>> {
+		yybegin(YYINITIAL);
+		return T_MACRO_ARGS_STRING;
+	}
+
+	"$" {IDENTIFIER} {
+		return T_MACRO_ARGS_VAR;
+	}
+
+	("\\" [^] | [^\"\\$}])+ {
+		return T_MACRO_ARGS_STRING;
+	}
 }

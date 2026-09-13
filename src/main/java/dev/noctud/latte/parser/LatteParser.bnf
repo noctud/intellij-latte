@@ -27,6 +27,11 @@ macro            ::= macroComment | (
                                     )
 
 macroComment     ::= T_MACRO_COMMENT
+
+// A comment written in the PHP inside a tag. It is in the parser definition's comment set, so
+// the builder skips it the way it skips the template comment above; the rule is here to declare
+// the token, the same way macroComment declares its own.
+phpComment       ::= T_PHP_COMMENT
 fake
 macroClassic     ::= macroTag macroTag?{
                      	methods = [

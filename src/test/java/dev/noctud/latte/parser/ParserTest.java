@@ -135,5 +135,19 @@ public class ParserTest extends BasePsiParsingTestCase {
         doTest(true, true);
     }
 
+    @Test
+    public void testPhpBlockNestedBraces() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testMacroStringWithNewline() {
+        doTest(true, true);
+    }
+
+    @Test
+    public void testMacroStringInterpolation() {
+        doTest(true, true);
+    }
 
 }

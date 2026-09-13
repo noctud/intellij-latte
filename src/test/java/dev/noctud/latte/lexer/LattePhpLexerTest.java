@@ -694,4 +694,83 @@ public class LattePhpLexerTest {
 			Pair.create(T_MACRO_TAG_CLOSE, "}"),
 		});
 	}
+
+	/**
+	 * Latte's own tag lexer knows one kind of comment inside a tag and it is the block one -
+	 * its TagLexer matches a slash-star run and nothing else, so a block comment is what the
+	 * plugin has to model. Read as PHP instead, the apostrophe in ordinary English - "isn't",
+	 * "don't" - opened a literal that ran to the end of the tag, and the parser reported an
+	 * error on a template Latte compiles without complaint.
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testABlockCommentIsOneCommentTokenAndNotPhp() {
+		Lexer lexer = new LatteLexer();
+
+		lexer.start("{php /* it isn't reset */ $a = 0}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_NAME, "php"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_COMMENT, "/* it isn't reset */"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS_VAR, "$a"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_DEFINITION_OPERATOR, "="),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS_NUMBER, "0"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	/**
+	 * A brace inside a literal is what the literal says and never the end of the tag - Latte
+	 * compiles both of these without complaint. Read as the closer, the quote that ends the
+	 * literal was taken as the start of a new one, so what followed changed meaning: the two
+	 * quotes of one literal ended up opening two.
+	 *
+	 * The brace was already content wherever the literal had something in front of it, so only
+	 * one that opens the rest of the literal was ever wrong.
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testABraceIsContentWhereverTheLiteralCloses() {
+		Lexer lexer = new LatteLexer();
+
+		lexer.start("{= '}'}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_SHORTNAME, "="),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_SINGLE_QUOTE_LEFT, "'"),
+			Pair.create(T_MACRO_ARGS_STRING, "}"),
+			Pair.create(T_PHP_SINGLE_QUOTE_RIGHT, "'"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+
+		lexer.start("{= \"}\"}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_SHORTNAME, "="),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_DOUBLE_QUOTE_LEFT, "\""),
+			Pair.create(T_MACRO_ARGS_STRING, "}"),
+			Pair.create(T_PHP_DOUBLE_QUOTE_RIGHT, "\""),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+
+		// A literal left open still ends at the closing brace, which is what that rule is for:
+		// the tag has to end somewhere while one is being typed. The empty string token is what
+		// the state returns on reaching the end of what it was given, and it was there before
+		// this as well - it is asserted so that a change to it is seen rather than assumed.
+		lexer.start("{= '}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_SHORTNAME, "="),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_SINGLE_QUOTE_LEFT, "'"),
+			Pair.create(T_MACRO_ARGS_STRING, ""),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
 }

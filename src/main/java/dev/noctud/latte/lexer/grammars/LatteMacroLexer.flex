@@ -82,6 +82,18 @@ NAME_FULL = [a-zA-Z][a-zA-Z0-9_]* ([.:][a-zA-Z0-9_]+)*
 }
 
 <NAME_ANY, NAME_NOT_Q, NAME_SHORT, ARGS> {
+	// A block comment is taken whole, and this is the only reason why. Read one character at a
+	// time, a comment ending a tag falls apart: the */ before the closing brace leaves a / and a }
+	// side by side, which is how a tag says it closes itself - so {var $a = 1 /* note */} ended in
+	// the middle of its own comment. Latte compiles that template, so nothing here may report it.
+	// Longest match wins in JFlex, so this beats both the single character below and "/}".
+	// An opening without an ending still matches nothing, which leaves the tag as it is today
+	// rather than reading to the end of the file looking for one.
+	"/*" ~"*/" {
+		yybegin(ARGS);
+		return T_MACRO_CONTENT;
+	}
+
 	"}}" {
 		if (doubleBraceMode) {
 			yybegin(ARGS);
