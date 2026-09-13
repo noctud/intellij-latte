@@ -17,4 +17,11 @@ public interface LattePhpMethodElement extends BaseLattePhpElement, StubBasedPsi
 
     boolean isFunction();
 
+    /**
+     * Whether the call is the {@code new Foo(...)} of a constructor rather than a call to a
+     * function of that name. The lexer gives an unqualified name followed by a bracket to this
+     * element whichever it is, and only the {@code new} in front of it tells them apart.
+     */
+    boolean isConstructorCall();
+
 }

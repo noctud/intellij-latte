@@ -145,10 +145,11 @@ public class LatteDefaultConfiguration {
         addLatteFilter("reverse", "reverse an UTF-8 string or array");
         addLatteFilter("length", "returns length of a string or array");
         addLatteFilter("sort", "simply sorts array");
-        addLatteFilter("reverse", "array sorted in reverse order (used with |sort)");
-        addLatteFilter("batch", ":($array, $length [, $item])", "returns length of a string or array", "::");
-
-        addLatteFilter("date", ":(int $min, int $max)", "returns value clamped to the inclusive range of min and max.", "::");
+        // The value a filter is applied to is not one of its arguments: it is what stands to the
+        // left of the pipe. Registered with the array of the PHP function behind it in its
+        // parameter list, {$items|batch:2} was reported as missing a parameter that cannot be
+        // written there at all.
+        addLatteFilter("batch", ":($length [, $item])", "splits an array into groups of the given length", ":");
 
         addLatteFilter("lower", "makes a string lower case");
         addLatteFilter("upper", "makes a string upper case");

@@ -1,0 +1,2 @@
+{var $items = [1, 2, 3, 4]}
+{foreach ($items|batch:2) as $row}{$row|implode:'-'}{/foreach}

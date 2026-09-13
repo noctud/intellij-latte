@@ -12,6 +12,8 @@ import dev.noctud.latte.psi.impl.LatteStubPhpElementImpl;
 import dev.noctud.latte.psi.impl.LattePsiImplUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import dev.noctud.latte.psi.LattePhpStatement;
+import dev.noctud.latte.psi.LattePhpStatementFirstPart;
 import dev.noctud.latte.psi.LatteTypes;
 
 public abstract class LattePhpMethodElementImpl extends LatteStubPhpElementImpl<LattePhpMethodStub> implements LattePhpMethodElement {
@@ -77,6 +79,29 @@ public abstract class LattePhpMethodElementImpl extends LatteStubPhpElementImpl<
     public boolean isFunction() {
         PsiElement prev = PsiTreeUtil.skipWhitespacesAndCommentsBackward(this);
         return prev == null || (prev.getNode().getElementType() != LatteTypes.T_PHP_DOUBLE_COLON && prev.getNode().getElementType() != LatteTypes.T_PHP_OBJECT_OPERATOR);
+    }
+
+    /**
+     * The {@code new} sits outside the statement the name is parsed into - {@code new Foo(1)}
+     * puts the keyword in the enclosing content and the call in a statement of its own - so the
+     * search walks out through the statement wrappers as long as nothing precedes them, and stops
+     * at whatever does.
+     */
+    @Override
+    public boolean isConstructorCall() {
+        PsiElement current = this;
+        while (current != null) {
+            PsiElement prev = PsiTreeUtil.skipWhitespacesAndCommentsBackward(current);
+            if (prev != null) {
+                return prev.getNode().getElementType() == LatteTypes.T_PHP_NEW;
+            }
+
+            current = current.getParent();
+            if (!(current instanceof LattePhpStatement) && !(current instanceof LattePhpStatementFirstPart)) {
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override

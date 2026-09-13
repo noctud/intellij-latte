@@ -74,6 +74,20 @@ public class ModifierDefinitionInspectionTest extends BasePsiParsingTestCase {
         Assert.assertEquals(ProblemHighlightType.WARNING, problems.get(0).getType());
     }
 
+    /**
+     * The value a filter is applied to is not one of its arguments. {@code batch} was registered
+     * as {@code ($array, $length [, $item])}, the shape of the PHP function behind it, so
+     * {@code |batch:2} was reported as missing a parameter it cannot be given: the array is what
+     * stands to the left of the pipe.
+     */
+    @Test
+    public void testFilterAppliedToItsSubject() throws IOException {
+        List<LatteInspectionInfo> problems = getProblems("FilterAppliedToItsSubject.latte");
+
+        Assert.assertNotNull(problems);
+        Assert.assertSame(0, problems.size());
+    }
+
     private List<LatteInspectionInfo> getProblems(@NotNull String templateName) throws IOException {
         PsiFile file = parseFile(templateName);
         return (new ModifierDefinitionInspection()).checkFile(file);

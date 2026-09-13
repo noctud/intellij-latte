@@ -105,6 +105,11 @@ public class VariablesInspection extends BaseLocalInspectionTool {
 
             for (LattePhpCachedVariable varDefinition : definitions) {
                 if (!varDefinition.matchElement(element) && varDefinition.getVariableContext() == element.getVariableContext()) {
+                    if (element.isVarDeclarationWithoutValue() || varDefinition.isVarDeclarationWithoutValue()) {
+                        // {var $a}{var $a = 1}: a declaration without a value is a forward
+                        // declaration, not a competing assignment
+                        continue;
+                    }
                     PsiElement context = element.getVariableContext();
                     if (context != null && LattePhpCachedVariable.areInDifferentBranches(
                         element.getElement(), varDefinition.getElement(), context
