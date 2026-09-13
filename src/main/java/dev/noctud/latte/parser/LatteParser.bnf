@@ -142,7 +142,21 @@ htmlEmptyTag    ::= T_HTML_OPEN_TAG_OPEN htmlTagContent (T_HTML_OPEN_TAG_CLOSE |
                      }
 
 // PHP tokens
-phpContent       ::= (phpForeach | phpFor | phpArrayOfVariables | phpArray | phpKeyArrayItem | blockName | link | control | filePath | phpInternalExpression)+
+// A foreach header is the whole of what a tag holds, never one item of a list, so it
+// is tried once for the tag rather than once for every item of it. Inside the list it
+// made parsing one tag cost the square of its length: it parses a whole expression
+// before reaching the "as" that tells it apart, so on a tag without one every item of
+// the list paid for parsing the rest of the tag and throwing it away. The guard looks
+// for the "as" first. A for header is not tried here: ";" is lexed as T_MACRO_ARGS,
+// which phpInternalExpression* takes before phpFor could ever see it, so it cannot match.
+phpContent       ::= <<hasAsBeforeTheTagCloses>> phpForeach phpContentItem*
+                   | phpContentItem+
+
+// Private, so the items stay children of phpContent and the tree is the one it was.
+// phpKeyArrayItem parses a whole key before it looks for the arrow, which is the same
+// shape of cost as the foreach header, so it is guarded by the arrow the same way.
+private
+phpContentItem   ::= phpArrayOfVariables | phpArray | <<hasArrowBeforeTheTagCloses>> phpKeyArrayItem | blockName | link | control | filePath | phpInternalExpression
 
 blockName        ::= "#" T_PHP_IDENTIFIER
 
@@ -299,7 +313,21 @@ phpArrayContent    ::= (T_WHITESPACE? (phpArgument | T_MACRO_ARGS) T_WHITESPACE?
 
 phpArrayDefinitionContent    ::= phpArrayItem ("," phpArrayItem)* ","?
 
-phpArrayItem   ::= (phpArrayKey (T_PHP_DOUBLE_ARROW | "=>"))? phpArrayValue
+// An item's first expression is only a key if an arrow follows it, and the two
+// are the same language - both are phpPrivateArgument*, which can be a whole
+// nested array. Written as "(key arrow)? value" the parser has to parse that
+// expression to find out whether the arrow is there, throw the result away when
+// it is not, and parse the identical text again as the value: T(n) = 2*T(n-1),
+// so sixteen levels of {= [1, [1, ...]]} take seconds.
+//
+// Parsing the expression once and only then looking for the arrow costs the
+// same on an item with a key and is linear without one. The key keeps its
+// place in the tree - it is the first of the item's two expressions - and
+// getKey() / getValue() on the item tell the two apart.
+phpArrayItem   ::= phpArrayValue ((T_PHP_DOUBLE_ARROW | "=>") phpArrayValue)? {
+                    mixin="dev.noctud.latte.psi.impl.elements.LattePhpArrayItemElementImpl"
+                    implements="dev.noctud.latte.psi.elements.LattePhpArrayItemElement"
+                }
 
 private
 phpMethodDefinition       ::= T_WHITESPACE? (T_PHP_DOUBLE_COLON | T_PHP_OBJECT_OPERATOR) T_WHITESPACE? phpMethod
@@ -318,7 +346,7 @@ phpArgument    ::= phpPrivateArgument | macroModifier | T_PHP_AS | T_PHP_DOUBLE_
 
 private
 phpPrivateArgument    ::=  phpString | phpArrayOfVariables | phpTypedArguments | phpStatement | phpType | T_MACRO_ARGS_NUMBER
-                    | phpArray | phpDefinition | phpMethod | phpClassReference
+                    | <<hasMatchingBracketBeforeTagCloses>> phpArray | phpDefinition | phpMethod | phpClassReference
                     | phpStatic | phpInBrackets | phpVariable | T_PHP_NULL_MARK | T_PHP_CONTENT_TYPE | T_PHP_OBJECT_OPERATOR
                     | T_PHP_RELATIONAL_OPERATOR | T_PHP_ASSIGNMENT_OPERATOR | T_PHP_LOGIC_OPERATOR | T_PHP_OPERATOR
                     | T_PHP_ADDITIVE_OPERATOR | T_PHP_BITWISE_OPERATOR | T_PHP_REFERENCE_OPERATOR | T_PHP_SHIFT_OPERATOR
