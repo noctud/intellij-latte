@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.8.1] - 2026-09-13
+
+### Fixed
+
+- `StubTextInconsistencyException` when searching for usages of a PHP method, property or constant
+- `ArrayIndexOutOfBoundsException` and missing references when `getReferences()` is called from several threads, and stale references in a `{link}` after an edit to a neighbouring part
+- `StackOverflowError` taking down a whole inspection pass on a variable defined from itself, such as `{var $a = $a}` read through a member
+- Template left unparsed, with `refused to parse text with Language: XML` in the log, after `{contentType}` is edited in an open file
+- Editor freeze on deeply nested arrays, on tags holding many arguments or statements, and on runs of unclosed brackets
+- `{var $d = new DateTimeImmutable('…')}` reported as an unknown function
+- `{$items|batch:2}` reported as missing required parameters
+- `{var $a}`, `{var $a, $b}` and `{var App\Model\Thing $x}` reported as a missing assignment
+- A method reported as missing on a type that resolves to no class
+
+### Performance
+
+- Finding usages of a PHP method or property resolves the reference once instead of once per candidate class
+
 ## [1.8.0] - 2026-07-11
 
 ### Added
