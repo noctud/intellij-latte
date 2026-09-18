@@ -1,0 +1,47 @@
+name: Test Latte XML exporter
+
+on:
+  push:
+    paths:
+      - 'latte-xml-export.php'
+      - 'src/test/php/latte-xml-export-test.php'
+      - 'src/test/resources/data/settings/exported-latte.xml'
+      - '.github/workflows/test-exporter.yaml'
+  pull_request:
+    paths:
+      - 'latte-xml-export.php'
+      - 'src/test/php/latte-xml-export-test.php'
+      - 'src/test/resources/data/settings/exported-latte.xml'
+      - '.github/workflows/test-exporter.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} / Latte ${{ matrix.latte }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.0'
+            latte: '3.0.4'
+          - php: '8.0'
+            latte: '3.0.*'
+          - php: '8.4'
+            latte: '^3.1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          extensions: dom
+      - name: Install Latte
+        run: |
+          mkdir -p /tmp/latte-exporter-test
+          composer --working-dir=/tmp/latte-exporter-test init --name=noctud/latte-exporter-test --no-interaction
+          composer --working-dir=/tmp/latte-exporter-test require "latte/latte:${{ matrix.latte }}" "nette/caching:^3.2" --no-interaction --no-plugins --no-scripts
+      - name: Run exporter tests
+        run: php src/test/php/latte-xml-export-test.php /tmp/latte-exporter-test/vendor/autoload.php

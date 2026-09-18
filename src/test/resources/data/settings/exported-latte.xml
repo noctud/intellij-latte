@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="LattePluginSettings">
+    <customMacroSettings>
+      <list>
+        <LatteTagSettings MacroName="exportAttr" MacroType="ATTR_ONLY" Arguments="" DeprecatedMessage=""/>
+        <LatteTagSettings MacroName="exportPair" MacroType="PAIR" Arguments="" DeprecatedMessage=""/>
+      </list>
+    </customMacroSettings>
+    <customModifierSettings>
+      <list>
+        <LatteFilterSettings ModifierName="exportFilter" ModifierHelp="int $count" ModifierDescription="" ModifierDoubleInsert=":"/>
+      </list>
+    </customModifierSettings>
+    <customFunctionSettings>
+      <list>
+        <LatteFunctionSettings FunctionName="exportFunction" FunctionReturnType="bool" FunctionHelp="()" FunctionDescription=""/>
+      </list>
+    </customFunctionSettings>
+  </component>
+</project>

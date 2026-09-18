@@ -45,6 +45,52 @@ Supported Features
 * Support for `{syntax off}`, `{syntax double}`, and `n:syntax` attributes
 
 
+Exporting custom Latte definitions
+------------
+
+Copy [latte-xml-export.php](latte-xml-export.php) into your PHP project's `bin/` directory. It uses the project's existing Composer dependencies and requires Latte 3.0.4 or newer within 3.x, PHP 8.0 or newer, and `ext-dom`.
+
+For a Nette application with `App\Bootstrap::boot()->createContainer()` and a registered `Nette\Bridges\ApplicationLatte\LatteFactory`, run from the project root:
+
+```sh
+php bin/latte-xml-export.php
+```
+
+This prints the XML for review. To update the IDE settings, **close the project in the IDE first**, then run:
+
+```sh
+php bin/latte-xml-export.php --output .idea/latte.xml
+```
+
+The output directory must already exist. Existing options, variables, unrelated components, and custom definitions absent from the export are preserved. Matching definitions receive inferred types and signatures, retaining manual descriptions, tag arguments, other attributes, and children. Removed PHP definitions are not automatically removed from XML; delete those entries manually. Regenerate when your extensions change, then reopen the IDE project.
+
+For other application layouts, create a PHP bootstrap file returning the configured engine, for example `bin/latte-export-bootstrap.php`:
+
+```php
+<?php
+// The project's Composer autoloader is already loaded.
+$latte = new Latte\Engine();
+$latte->addExtension(new App\Latte\MyExtension());
+// Or obtain the engine from your application's container/factory here.
+return $latte;
+```
+
+```sh
+php bin/latte-xml-export.php --bootstrap bin/latte-export-bootstrap.php --output .idea/latte.xml
+```
+
+Use `--autoload path/to/vendor/autoload.php` for a nonstandard Composer location. The script runs your bootstrap, so it has the same initialization requirements and side effects as starting your application. Filters/functions registered directly on the returned engine are included; dynamic filter loaders and extensions registered later by a presenter are not discoverable from that engine.
+
+The exporter retains the plugin's built-in Latte/Nette definitions unless overridden by custom callbacks. Paired tags are inferred from generator parsers (including `Extension::order()` wrappers), and filter hints omit the implicit filtered value and `FilterInfo` argument. Tag syntax with optional closing tags, allowed filters, and tag arguments cannot be fully inferred: review those settings in the IDE. An inferred tag type is refreshed on each export.
+
+Based on [Jakub Vrána's original config generator (#12)](https://github.com/noctud/intellij-latte/pull/12).
+
+To run the exporter's regression checks against a project with Latte installed:
+
+```sh
+php src/test/php/latte-xml-export-test.php /path/to/vendor/autoload.php
+```
+
 Building
 ------------
 
