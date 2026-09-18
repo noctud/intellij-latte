@@ -11,8 +11,9 @@ assignees: ''
 A clear and concise description of what the bug is and expected behavior.
 
 **Environment (please complete the following information):**
- - PhpStorm version [e.g. 2020.3.3]
- - Plugin version [e.g. 1.1.2]
+ - IDE name and version:
+ - Latte Support plugin version:
+ - Latte version used by your project:
 
 **To Reproduce**
 Steps to reproduce the behavior (or attach video):
@@ -22,7 +23,7 @@ Steps to reproduce the behavior (or attach video):
 4. See error
 
 **Code**
-If applicable, add your Latte code here as a text or upload file (text is better than screenshot for debugging)
+Please include the smallest Latte template that reproduces the problem as text or an attached file, so it can be tried locally. Include any PHP declarations or custom Latte definitions needed to reproduce it, and remove private code and data.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.

@@ -91,6 +91,12 @@ To run the exporter's regression checks against a project with Latte installed:
 php src/test/php/latte-xml-export-test.php /path/to/vendor/autoload.php
 ```
 
+Contributing
+------------
+
+Bug reports with a small reproducible template are welcome. Please read the [contribution guide](CONTRIBUTING.md) before starting a PR, especially for parser or lexer changes.
+
+
 Building
 ------------
 
