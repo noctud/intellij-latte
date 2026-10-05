@@ -183,6 +183,10 @@ public class LattePhpUtil {
         return getPhpIndex(project).getAnyByFQN(className);
     }
 
+    public static Collection<Constant> getConstantsByFQN(Project project, String constantName) {
+        return getPhpIndex(project).getConstantsByFQN(constantName);
+    }
+
     public static Collection<PhpClass> getInterfacesByFQN(Project project, String className) {
         return getPhpIndex(project).getInterfacesByFQN(className);
     }

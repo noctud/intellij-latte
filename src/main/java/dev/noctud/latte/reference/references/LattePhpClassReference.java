@@ -5,6 +5,8 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import dev.noctud.latte.psi.LattePhpClassUsage;
 import dev.noctud.latte.php.LattePhpUtil;
+import dev.noctud.latte.psi.elements.LattePhpClassReferenceElement;
+import com.jetbrains.php.lang.psi.elements.Constant;
 import com.jetbrains.php.lang.psi.elements.PhpClass;
 import com.jetbrains.php.lang.psi.elements.PhpNamespace;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +43,11 @@ public class LattePhpClassReference extends PsiReferenceBase<PsiElement> impleme
                 results.add(new PsiElementResolveResult(phpClass));
             }
         }
+        if (isConstantPosition()) {
+            for (Constant constant : LattePhpUtil.getConstantsByFQN(project, className)) {
+                results.add(new PsiElementResolveResult(constant));
+            }
+        }
 
         //for (dev.noctud.latte.psi.LattePhpClassReference classReference : LatteIndexUtil.getClassesByFqn(project, className)) {
         //    results.add(new PsiElementResolveResult(classReference.getPhpClassUsage()));
@@ -58,6 +65,11 @@ public class LattePhpClassReference extends PsiReferenceBase<PsiElement> impleme
             }
         }
         return null;
+    }
+
+    private boolean isConstantPosition() {
+        PsiElement parent = getElement().getParent();
+        return parent instanceof LattePhpClassReferenceElement && ((LattePhpClassReferenceElement) parent).isConstantPosition();
     }
 
     @Override
@@ -117,6 +129,10 @@ public class LattePhpClassReference extends PsiReferenceBase<PsiElement> impleme
 
         if (element instanceof PhpClass) {
             return LattePhpUtil.isReferenceTo((PhpClass) element, multiResolve(false), project, ((PhpClass) element).getFQN());
+        }
+
+        if (element instanceof Constant) {
+            return className.equals(((Constant) element).getFQN()) && isConstantPosition();
         }
 
         if (!(element instanceof PhpNamespace)) {
