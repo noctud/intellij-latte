@@ -35,7 +35,11 @@ public class ClassUsagesInspection extends BaseLocalInspectionTool {
             @Override
             public void visitElement(PsiElement element) {
                 if (element instanceof LattePhpClassReference) {
-                    String className = ((LattePhpClassReference) element).getClassName();
+                    LattePhpClassReference reference = (LattePhpClassReference) element;
+                    String className = reference.getClassName();
+                    if (reference.isConstantPosition() && !LattePhpUtil.getConstantsByFQN(element.getProject(), className).isEmpty()) {
+                        return;
+                    }
                     Collection<PhpClass> classes = LattePhpUtil.getClassesByFQN(element.getProject(), className);
                     if (classes.size() == 0) {
                         addProblem(manager, problems, element, "Undefined class '" + className + "'", isOnTheFly);

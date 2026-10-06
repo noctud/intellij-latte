@@ -3,8 +3,13 @@ package dev.noctud.latte.psi.impl.elements;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import dev.noctud.latte.indexes.stubs.LattePhpClassStub;
+import dev.noctud.latte.psi.LattePhpStatement;
+import dev.noctud.latte.psi.LattePhpStatementFirstPart;
+import dev.noctud.latte.psi.LatteTypes;
 import dev.noctud.latte.psi.elements.LattePhpClassReferenceElement;
 import dev.noctud.latte.psi.impl.LatteStubPhpElementImpl;
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +57,33 @@ public abstract class LattePhpClassReferenceElementImpl extends LatteStubPhpElem
             className = getPhpClassUsage().getClassName();
         }
         return className;
+    }
+
+    /**
+     * The {@code new} or {@code instanceof} sits outside the statement, the same as for
+     * {@link LattePhpMethodElementImpl#isConstructorCall()}, so it is looked for before it.
+     */
+    @Override
+    public boolean isConstantPosition() {
+        PsiElement firstPart = getParent();
+        if (!(firstPart instanceof LattePhpStatementFirstPart) || !(firstPart.getParent() instanceof LattePhpStatement)) {
+            return false;
+        }
+        LattePhpStatement statement = (LattePhpStatement) firstPart.getParent();
+        if (!statement.getPhpStatementPartList().isEmpty()) {
+            return false;
+        }
+        // ::class makes no statement part, the keyword is not a constant name, so the :: is left after the statement
+        PsiElement next = PsiTreeUtil.skipWhitespacesAndCommentsForward(statement);
+        if (next != null && next.getNode().getElementType() == LatteTypes.T_PHP_DOUBLE_COLON) {
+            return false;
+        }
+        PsiElement prev = PsiTreeUtil.skipWhitespacesAndCommentsBackward(statement);
+        if (prev == null) {
+            return true;
+        }
+        IElementType type = prev.getNode().getElementType();
+        return type != LatteTypes.T_PHP_NEW && !(type == LatteTypes.T_PHP_KEYWORD && prev.getText().equals("instanceof"));
     }
 
     @Override
