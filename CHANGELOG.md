@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.8.2] - 2026-10-07
+
+### Added
+
+- `latte-xml-export.php`, a single script that exports a project's custom tags, filters and functions into `.idea/latte.xml`
+
+### Changed
+
+- Renamed the plugin from Latte Support to Latte
+
+### Fixed
+
+- A global constant written with a leading backslash, such as `{=\VERSION}`, reported as an undefined class, and Ctrl+click on it leading nowhere
+
 ## [1.8.1] - 2026-09-13
 
 ### Fixed

@@ -1,6 +1,6 @@
 Latte for PhpStorm and IntelliJ IDEA
 =========================================
-[![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/24218-latte-support.svg?label=marketplace)](https://plugins.jetbrains.com/plugin/24218-latte-support)
+[![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/24218-latte.svg?label=marketplace)](https://plugins.jetbrains.com/plugin/24218-latte)
 [![Build](https://img.shields.io/github/actions/workflow/status/noctud/intellij-latte/build.yaml?branch=main)](https://github.com/noctud/intellij-latte/actions)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 [![Discord](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.noctud.dev)
@@ -21,7 +21,7 @@ This plugin is a fork of the [original free plugin](https://github.com/nette-int
 
 Installation
 ------------
-Settings → Plugins → Browse repositories → Find "Latte Support" → Install Plugin → Apply
+Settings → Plugins → Browse repositories → Find "Latte" → Install Plugin → Apply
 
 
 Installation from .jar file

@@ -1,6 +1,6 @@
 <idea-plugin>
 	<id>org.nette.latte</id>
-	<name>Latte Support</name>
+	<name>Latte</name>
 	<vendor>Noctud.dev</vendor>
 
 	<!-- http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges -->

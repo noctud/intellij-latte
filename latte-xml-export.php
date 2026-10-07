@@ -2,7 +2,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Export a project's Latte 3 definitions for the Latte Support IDE plugin.
+ * Export a project's Latte 3 definitions for the Latte IDE plugin.
  * Based on Jakub Vrána's config generator: https://github.com/noctud/intellij-latte/pull/12
  * Distributed under this repository's MIT license.
  */
