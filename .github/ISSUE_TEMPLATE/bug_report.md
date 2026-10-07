@@ -12,7 +12,7 @@ A clear and concise description of what the bug is and expected behavior.
 
 **Environment (please complete the following information):**
  - IDE name and version:
- - Latte Support plugin version:
+ - Latte plugin version:
  - Latte version used by your project:
 
 **To Reproduce**
