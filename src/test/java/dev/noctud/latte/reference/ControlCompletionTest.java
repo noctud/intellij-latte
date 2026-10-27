@@ -18,12 +18,14 @@ public class ControlCompletionTest extends NetteProjectTestCase {
         assertEquals(List.of("sidebar"), complete(PRODUCT_DEFAULT, "{control menu:<caret>}"));
     }
 
-    /**
-     * The subcomponents of the component. Nothing is offered, for the same reason a subcomponent
-     * does not resolve (see {@link ControlResolveTest}); should be {@code items}.
-     */
-    public void testASubcomponentIsNotOffered() {
-        assertEquals(List.of(), complete(PRODUCT_DEFAULT, "{control menu-<caret>}"));
+    /** The subcomponents of the component before the hyphen. */
+    public void testASubcomponent() {
+        assertEquals(List.of("items"), complete(PRODUCT_DEFAULT, "{control menu-<caret>}"));
+        assertEquals(List.of("badge"), complete(PRODUCT_DEFAULT, "{control menu-items-<caret>}"));
+    }
+
+    public void testARenderModeOfASubcomponent() {
+        assertEquals(List.of("compact"), complete(PRODUCT_DEFAULT, "{control menu-items:<caret>}"));
     }
 
     public void testTheFormTags() {

@@ -89,6 +89,12 @@ public class PresenterUsagesTest extends NetteProjectTestCase {
         );
     }
 
+    public void testASubcomponentFactory() {
+        template("app/UI/Home/menu.latte", "{control menu-items-badge}\n");
+        assertEquals(List.of("app/UI/Home/menu.latte: items"), usagesOf(method("\\App\\UI\\Menu\\MenuControl", "createComponentItems")));
+        assertEquals(List.of("app/UI/Home/menu.latte: badge"), usagesOf(method("\\App\\UI\\Menu\\ItemsControl", "createComponentBadge")));
+    }
+
     public void testARenderMethodOfAComponent() {
         assertEquals(List.of("app/UI/Product/default.latte: sidebar"), usagesOf(method("\\App\\UI\\Menu\\MenuControl", "renderSidebar")));
     }

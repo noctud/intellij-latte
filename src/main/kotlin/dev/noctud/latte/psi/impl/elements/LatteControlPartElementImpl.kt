@@ -61,15 +61,15 @@ abstract class LatteControlPartElementImpl(node: ASTNode) : LattePsiElementImpl(
         val text = segment.value.replace(CompletionUtil.DUMMY_IDENTIFIER_TRIMMED, "")
         val range = TextRange(0, textLength)
 
-        val reference = when {
-            start > component.length -> LatteControlReference(this, range, true, text, Kind.RENDER_MODE, component)
-            // The component a subcomponent belongs to is not followed yet, so a name in a hyphenated
-            // path resolves to nothing (pinned by ControlResolveTest).
-            component.contains('-') -> LatteControlReference(this, range, true, text, Kind.SUBCOMPONENT, null)
-            else -> LatteControlReference(this, range, true, text, Kind.COMPONENT, null)
+        if (start > component.length) {
+            return arrayOf(LatteControlReference(this, range, true, text, Kind.RENDER_MODE, component.split('-')))
         }
 
-        return arrayOf(reference)
+        // The names before this one, `[menu, items]` for `badge` in `menu-items-badge`.
+        val owners = component.substring(0, start).split('-').dropLast(1)
+        val kind = if (owners.isEmpty()) Kind.COMPONENT else Kind.SUBCOMPONENT
+
+        return arrayOf(LatteControlReference(this, range, true, text, kind, owners))
     }
 
     private companion object {

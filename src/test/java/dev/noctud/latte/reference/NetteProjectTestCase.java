@@ -95,6 +95,8 @@ public abstract class NetteProjectTestCase extends BasePlatformTestCase {
 
         final class ItemsControl extends Control
         {
+            public function renderCompact(): void {}
+
             protected function createComponentBadge(): Control {}
         }
         """;

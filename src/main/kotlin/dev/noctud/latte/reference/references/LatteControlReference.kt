@@ -5,9 +5,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
-import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.lang.psi.elements.Method
-import com.jetbrains.php.lang.psi.elements.PhpClass
 import dev.noctud.latte.presenter.NetteConventions
 import dev.noctud.latte.presenter.NetteConventions.Role
 import dev.noctud.latte.presenter.TemplatePresenters
@@ -23,8 +21,11 @@ class LatteControlReference(
     soft: Boolean,
     private val text: String,
     private val kind: Kind,
-    /** The component that creates a subcomponent, or that a render mode renders. */
-    private val owner: String?,
+    /**
+     * The path to the component that creates a subcomponent, or that a render mode renders:
+     * `[menu, items]` for `badge` in `menu-items-badge`, or for `sidebar` in `menu-items:sidebar`.
+     */
+    private val ownerPath: List<String>,
 ) : PsiReferenceBase<PsiElement>(element, rangeInElement, soft) {
 
     enum class Kind { COMPONENT, SUBCOMPONENT, RENDER_MODE }
@@ -33,8 +34,8 @@ class LatteControlReference(
         val presenters = templatePresenters() ?: return null
         return when (kind) {
             Kind.COMPONENT -> presenters.resolveComponent(text)
-            Kind.SUBCOMPONENT -> ownerClass(presenters)?.let { NetteConventions.findMember(it, Role.COMPONENT, text) ?: it }
-            Kind.RENDER_MODE -> ownerClass(presenters)?.let { NetteConventions.findMember(it, Role.RENDER_MODE, text) ?: it }
+            Kind.SUBCOMPONENT -> presenters.componentClass(ownerPath)?.let { NetteConventions.findMember(it, Role.COMPONENT, text) ?: it }
+            Kind.RENDER_MODE -> presenters.componentClass(ownerPath)?.let { NetteConventions.findMember(it, Role.RENDER_MODE, text) ?: it }
         }
     }
 
@@ -75,15 +76,8 @@ class LatteControlReference(
     }
 
     private fun ownerMembers(presenters: TemplatePresenters, role: Role): List<LookupElementBuilder> {
-        val ownerClass = ownerClass(presenters) ?: return emptyList()
+        val ownerClass = presenters.componentClass(ownerPath) ?: return emptyList()
         return presenters.members(ownerClass, role).map { (name, _) -> LookupElementBuilder.create(name).withIcon(AllIcons.Actions.Execute) }
-    }
-
-    /** The class of the component the owner's factory returns. */
-    private fun ownerClass(presenters: TemplatePresenters): PhpClass? {
-        val factory = owner?.let { presenters.resolveComponent(it) } ?: return null
-        val type = factory.type.types.firstOrNull() ?: return null
-        return PhpIndex.getInstance(factory.project).getAnyByFQN(type).firstOrNull()
     }
 
     private fun templatePresenters(): TemplatePresenters? {
