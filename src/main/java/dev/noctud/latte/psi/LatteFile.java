@@ -7,10 +7,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import dev.noctud.latte.LatteFileType;
 import dev.noctud.latte.LatteLanguage;
-import dev.noctud.latte.completion.resolvers.ControlResolver;
 import dev.noctud.latte.php.NettePhpType;
 import dev.noctud.latte.psi.elements.LattePhpVariableElement;
-import dev.noctud.latte.completion.resolvers.LinkResolver;
 import dev.noctud.latte.utils.LattePhpCachedVariable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,8 +23,6 @@ public class LatteFile extends PsiFileBase {
     @Nullable List<LattePhpCachedVariable> sortedVariables = null;
     @Nullable NettePhpType templateType = null;
     @Nullable List<LattePhpClassUsage> templateTypes = null;
-    @NotNull LinkResolver linkResolver = new LinkResolver(this);
-    @NotNull ControlResolver controlResolver = new ControlResolver(this);
 
     public LatteFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, LatteLanguage.INSTANCE);
@@ -54,7 +50,6 @@ public class LatteFile extends PsiFileBase {
         sortedVariables = null;
         templateType = null;
         templateTypes = null;
-        linkResolver.reset();
     }
 
     public void resetTemplateTypes() {
@@ -235,14 +230,5 @@ public class LatteFile extends PsiFileBase {
                 .collect(Collectors.toList());
         }
         return templateTypes;
-    }
-
-    @NotNull
-    public LinkResolver getLinkResolver() {
-        return linkResolver;
-    }
-
-    public ControlResolver getControlResolver() {
-        return controlResolver;
     }
 }

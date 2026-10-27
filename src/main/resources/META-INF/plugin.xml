@@ -45,6 +45,7 @@
 		<lang.smartEnterProcessor implementationClass="dev.noctud.latte.editor.LatteSmartEnterProcessor" />
 
 		<referencesSearch implementation="dev.noctud.latte.reference.LatteReferenceSearch"/>
+		<referencesSearch implementation="dev.noctud.latte.reference.LattePresenterReferenceSearch"/>
 		<implicitUsageProvider implementation="dev.noctud.latte.reference.LatteImplicitUsageProvider"/>
 
 		<stubElementTypeHolder class="dev.noctud.latte.psi.LatteTypes" externalIdPrefix="latte."/>
