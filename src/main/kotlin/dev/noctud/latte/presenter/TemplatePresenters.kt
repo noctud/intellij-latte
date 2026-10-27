@@ -3,6 +3,7 @@ package dev.noctud.latte.presenter
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
+import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import dev.noctud.latte.ext.allSubclasses
@@ -72,6 +73,19 @@ class TemplatePresenters private constructor(private val template: LatteFile) {
         }
 
         return null
+    }
+
+    /**
+     * The class of the component at the end of a path: `[menu, items]` is the class
+     * `createComponentItems()` returns, on the class `createComponentMenu()` returns.
+     */
+    fun componentClass(path: List<String>): PhpClass? {
+        var phpClass = path.firstOrNull()?.let { resolveComponent(it) }?.returnedClass()
+        for (name in path.drop(1)) {
+            phpClass = phpClass?.let { NetteConventions.findMember(it, Role.COMPONENT, name) }?.returnedClass()
+        }
+
+        return phpClass
     }
 
     /** The components of the template's presenter, with their names. */
@@ -209,6 +223,11 @@ class TemplatePresenters private constructor(private val template: LatteFile) {
 
         val common = templatePath.commonPrefixWith(presenterPath).length
         return templatePath.length + presenterPath.length - 2 * common
+    }
+
+    private fun Method.returnedClass(): PhpClass? {
+        val type = type.types.firstOrNull() ?: return null
+        return PhpIndex.getInstance(project).getAnyByFQN(type).firstOrNull()
     }
 
     private fun ownerName(method: Method, fallback: PhpClass): String {

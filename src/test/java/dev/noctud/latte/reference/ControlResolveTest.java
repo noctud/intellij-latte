@@ -37,31 +37,29 @@ public class ControlResolveTest extends NetteProjectTestCase {
         assertEquals("\\App\\UI\\BasePresenter::createComponentMenu", resolve(PRODUCT_DEFAULT, "{control me<caret>nu:sidebar}"));
     }
 
-    /**
-     * A subcomponent is created by a factory of the component before it. Not resolved: the name
-     * before the hyphen is remembered as the parent, and the hyphen itself then forgets it again.
-     * Should resolve to {@code MenuControl::createComponentItems}.
-     */
-    public void testASubcomponentIsNotResolved() {
-        assertEquals("null", resolve(PRODUCT_DEFAULT, "{control menu-it<caret>ems}"));
+    /** A subcomponent is created by a factory of the component before it. */
+    public void testASubcomponent() {
+        assertEquals("\\App\\UI\\Menu\\MenuControl::createComponentItems", resolve(PRODUCT_DEFAULT, "{control menu-it<caret>ems}"));
     }
 
-    /**
-     * The first name of a hyphenated path is a component of the presenter. It is looked up as a
-     * subcomponent with no parent instead, so it resolves to nothing. Should resolve to
-     * {@code BasePresenter::createComponentMenu}.
-     */
-    public void testTheFirstNameOfASubcomponentPathIsNotResolved() {
-        assertEquals("null", resolve(PRODUCT_DEFAULT, "{control me<caret>nu-items}"));
+    /** The first name of a hyphenated path is a component of the presenter, as it is on its own. */
+    public void testTheFirstNameOfASubcomponentPath() {
+        assertEquals("\\App\\UI\\BasePresenter::createComponentMenu", resolve(PRODUCT_DEFAULT, "{control me<caret>nu-items}"));
     }
 
-    /**
-     * A subcomponent two levels down. Only the name right before is used as the parent, and it is
-     * looked up on the presenter, so the chain is lost. Should resolve to
-     * {@code ItemsControl::createComponentBadge}.
-     */
-    public void testASubcomponentTwoLevelsDownIsNotResolved() {
-        assertEquals("null", resolve(PRODUCT_DEFAULT, "{control menu-items-bad<caret>ge}"));
+    /** Each name is looked up on the class the factory before it returns, however long the path. */
+    public void testASubcomponentTwoLevelsDown() {
+        assertEquals("\\App\\UI\\Menu\\ItemsControl::createComponentBadge", resolve(PRODUCT_DEFAULT, "{control menu-items-bad<caret>ge}"));
+        assertEquals("\\App\\UI\\Menu\\MenuControl::createComponentItems", resolve(PRODUCT_DEFAULT, "{control menu-it<caret>ems-badge}"));
+    }
+
+    /** A subcomponent nobody creates points at the class that would have to. */
+    public void testASubcomponentThatIsNotThere() {
+        assertEquals("\\App\\UI\\Menu\\MenuControl", resolve(PRODUCT_DEFAULT, "{control menu-noSu<caret>ch}"));
+    }
+
+    public void testARenderModeOfASubcomponent() {
+        assertEquals("\\App\\UI\\Menu\\ItemsControl::renderCompact", resolve(PRODUCT_DEFAULT, "{control menu-items:comp<caret>act}"));
     }
 
     public void testTheFormTags() {
