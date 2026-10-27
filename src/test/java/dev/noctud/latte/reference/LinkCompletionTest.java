@@ -28,29 +28,22 @@ public class LinkCompletionTest extends NetteProjectTestCase {
         assertEquals(List.of("inserted: {link Home:}"), complete(PRODUCT_DEFAULT, "{link H<caret>}"));
     }
 
-    /**
-     * The actions of the presenter named. The presenters are offered again, although none of them
-     * can follow a presenter here.
-     */
+    /** The actions of the presenter named, and no presenters, since none can follow one. */
     public void testAnActionOfAnotherPresenter() {
-        assertEquals(List.of("Admin:", "Home:", "Product:", "default"), complete(PRODUCT_DEFAULT, "{link Home:<caret>}"));
+        assertEquals(List.of("default"), complete(PRODUCT_DEFAULT, "{link Home:<caret>}"));
     }
 
     public void testAnAbsoluteDestination() {
         assertEquals(List.of("Admin:", "Home:", "Product:"), complete(PRODUCT_DEFAULT, "{link :<caret>}"));
     }
 
-    /**
-     * After a module, the presenters of the module. What is offered is the top level again;
-     * should be {@code Dashboard:}.
-     */
+    /** After a module, the presenters of the module. */
     public void testAPresenterInAModule() {
-        assertEquals(List.of("Admin:", "Home:", "Product:"), complete(PRODUCT_DEFAULT, "{link :Admin:<caret>}"));
+        assertEquals(List.of("Dashboard:"), complete(PRODUCT_DEFAULT, "{link :Admin:<caret>}"));
     }
 
-    /** The actions of the presenter, and the presenter itself again, which cannot follow here. */
     public void testAnActionOfAPresenterInAModule() {
-        assertEquals(List.of("Dashboard:", "default", "stats"), complete(PRODUCT_DEFAULT, "{link :Admin:Dashboard:<caret>}"));
+        assertEquals(List.of("default", "stats"), complete(PRODUCT_DEFAULT, "{link :Admin:Dashboard:<caret>}"));
     }
 
     /** Inside a module, the presenters offered are the module's own. */

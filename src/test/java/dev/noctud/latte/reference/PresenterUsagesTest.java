@@ -67,6 +67,11 @@ public class PresenterUsagesTest extends NetteProjectTestCase {
         assertEquals(List.of("app/UI/Home/default.latte: logout!"), usagesOf(method(BASE, "handleLogout")));
     }
 
+    public void testASignalOfAComponent() {
+        template("app/UI/Home/menu.latte", "{link menu-toggle!}\n");
+        assertEquals(List.of("app/UI/Home/menu.latte: menu-toggle!"), usagesOf(method("\\App\\UI\\Menu\\MenuControl", "handleToggle")));
+    }
+
     public void testAPresenter() {
         assertEquals(List.of("app/UI/Home/default.latte: Product", "app/UI/Home/default.latte: Product"), usagesOf(phpClass(PRODUCT)));
         assertEquals(List.of("app/UI/Admin/Dashboard/default.latte: Home"), usagesOf(phpClass(HOME)));

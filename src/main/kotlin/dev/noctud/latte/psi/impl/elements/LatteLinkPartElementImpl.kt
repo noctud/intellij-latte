@@ -53,17 +53,22 @@ abstract class LatteLinkPartElementImpl(node: ASTNode) : LattePsiElementImpl(nod
         }
 
         // Every capitalised name in the link is a presenter, wherever this part is.
-        val presenters = parentLink.link
+        val link = parentLink.link
+        val presenters = presenters(link)
+        val currentPresenter = presenters.lastOrNull()
+        val previousPresenters = presenters.dropLast(1)
+        val presentersBefore = presenters(link.substring(0, startOffsetInParent))
+
+        val text = name.replace(CompletionUtil.DUMMY_IDENTIFIER_TRIMMED, "")
+        return arrayOf(LatteLinkReference(this, TextRange(0, textLength), true, text, currentPresenter, previousPresenters, presentersBefore))
+    }
+
+    private fun presenters(link: String): List<String> {
+        return link
             .replace(CompletionUtil.DUMMY_IDENTIFIER_TRIMMED, "")
             .replace("/", "")
             .trim()
             .split(":")
             .filter { it.isNotEmpty() && it.isCapitalized() }
-
-        val currentPresenter = presenters.lastOrNull()
-        val previousPresenters = presenters.dropLast(1)
-
-        val text = name.replace(CompletionUtil.DUMMY_IDENTIFIER_TRIMMED, "")
-        return arrayOf(LatteLinkReference(this, TextRange(0, textLength), true, text, currentPresenter, previousPresenters))
     }
 }

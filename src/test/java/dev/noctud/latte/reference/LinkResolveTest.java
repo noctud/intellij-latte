@@ -95,13 +95,10 @@ public class LinkResolveTest extends NetteProjectTestCase {
         assertEquals("\\App\\UI\\Product\\ProductPresenter::actionEdit", resolve("app/Presenters/templates/Product/default.latte", "{link ed<caret>it}"));
     }
 
-    /**
-     * {@code <Presenter>.<action>.latte}, the flat layout Nette also accepts. Not recognised: the
-     * presenter is guessed from the file name split at {@code -} or {@code _}, never at a dot.
-     * Should resolve to {@code ProductPresenter::actionEdit}.
-     */
-    public void testTheFlatTemplateLayoutIsNotRecognised() {
-        assertEquals("null", resolve("app/Presenters/templates/Product.default.latte", "{link ed<caret>it}"));
+    /** {@code <Presenter>.<action>.latte}, the flat layout Nette also accepts. */
+    public void testTheFlatTemplateLayout() {
+        assertEquals("\\App\\UI\\Product\\ProductPresenter::actionEdit", resolve("app/Presenters/templates/Product.default.latte", "{link ed<caret>it}"));
+        assertEquals("\\App\\UI\\Product\\ProductPresenter::renderShow", resolve("app/Presenters/templates/Product.show.latte", "{link th<caret>is}"));
     }
 
     /** {@code {templateType}} names the presenter when the template is somewhere its path says nothing. */
@@ -112,22 +109,17 @@ public class LinkResolveTest extends NetteProjectTestCase {
         );
     }
 
-    /**
-     * A signal of a component is addressed through the component. Not supported: the whole
-     * {@code menu-toggle!} is looked up as a signal of the presenter. Should resolve to
-     * {@code MenuControl::handleToggle}.
-     */
-    public void testASignalOfAComponentIsNotResolved() {
-        assertEquals("null", resolve(PRODUCT_DEFAULT, "{link menu-tog<caret>gle!}"));
+    /** A signal of a component is addressed through the component. */
+    public void testASignalOfAComponent() {
+        assertEquals("\\App\\UI\\Menu\\MenuControl::handleToggle", resolve(PRODUCT_DEFAULT, "{link menu-tog<caret>gle!}"));
+        assertEquals("null", resolve(PRODUCT_DEFAULT, "{link menu-noSu<caret>ch!}"));
     }
 
     /**
-     * Two presenters of the same name in different modules: the module in the link should pick
-     * one. It does not - the module is meant to score the candidates by namespace, but the
-     * namespace is matched against a doubled backslash, which never occurs, so the presenter
-     * nearer the template wins. Should resolve to the Admin {@code DashboardPresenter::renderStats}.
+     * Two presenters of the same name in different modules: the module in the link picks one, even
+     * when the other is nearer the template.
      */
-    public void testTheModuleDoesNotDecideBetweenTwoPresentersOfTheSameName() {
+    public void testTheModuleDecidesBetweenTwoPresentersOfTheSameName() {
         myFixture.addFileToProject("app/UI/Front/Dashboard/DashboardPresenter.php", """
             <?php
             namespace App\\UI\\Front\\Dashboard;
@@ -138,10 +130,17 @@ public class LinkResolveTest extends NetteProjectTestCase {
             }
             """);
 
-        assertEquals("null", resolve("app/UI/Front/Dashboard/default.latte", "{link :Admin:Dashboard:st<caret>ats}"));
+        assertEquals(
+            "\\App\\UI\\Admin\\Dashboard\\DashboardPresenter::renderStats",
+            resolve("app/UI/Front/Dashboard/default.latte", "{link :Admin:Dashboard:st<caret>ats}")
+        );
+        assertEquals(
+            "\\App\\UI\\Admin\\Dashboard\\DashboardPresenter",
+            resolve("app/UI/Front/Dashboard/default.latte", "{link :Admin:Dash<caret>board:stats}")
+        );
         assertEquals(
             "\\App\\UI\\Front\\Dashboard\\DashboardPresenter",
-            resolve("app/UI/Front/Dashboard/default.latte", "{link :Admin:Dash<caret>board:stats}")
+            resolve("app/UI/Admin/Dashboard/default.latte", "{link :Front:Dash<caret>board:default}")
         );
     }
 }
