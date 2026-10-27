@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.9.0] - 2026-10-27
+
+### Added
+
+- Subcomponents in `{control}`, such as `{control menu-items}`, resolved, completed and found by find usages
+- Signals of components in links, such as `{link menu-toggle!}`
+- Templates in the flat `Product.edit.latte` layout recognised for their presenter and action
+
+### Changed
+
+- PhpStorm 2023.2 or newer is required
+
+### Fixed
+
+- The module in a link, such as `:Admin:Dashboard:stats`, ignored when two presenters share a name
+- Link completion after a module or presenter, such as `:Admin:` or `Home:`, offering the top-level presenters instead of what can follow
+
 ## [1.8.2] - 2026-10-07
 
 ### Added
