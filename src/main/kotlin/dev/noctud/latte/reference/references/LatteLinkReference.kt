@@ -20,6 +20,7 @@ import dev.noctud.latte.psi.elements.LatteLinkElement
  * One part of a link destination: a presenter (`Product`), an action (`edit`) or a signal
  * (`delete!`). Capitalised names are presenters, and the last of them is the presenter the action
  * or signal belongs to - `currentPresenter`, with the ones before it in `previousPresenters`.
+ * Completion offers what can follow the presenters before this part, `presentersBefore`.
  */
 class LatteLinkReference(
     element: PsiElement,
@@ -28,6 +29,7 @@ class LatteLinkReference(
     private val text: String,
     private val currentPresenter: String?,
     private val previousPresenters: List<String>,
+    private val presentersBefore: List<String>,
 ) : PsiReferenceBase<PsiElement>(element, rangeInElement, soft) {
 
     override fun resolve(): PsiElement? {
@@ -54,7 +56,7 @@ class LatteLinkReference(
 
         val variants = mutableListOf<LookupElement>()
         if (text.isEmpty() || text.isCapitalized()) {
-            variants += presenters.presentersForCompletion(previousPresenters.lastOrNull(), linkText.startsWith(":"), !cleanLink.trim().contains(":"))
+            variants += presenters.presentersForCompletion(presentersBefore.lastOrNull(), linkText.startsWith(":"), !cleanLink.trim().contains(":"))
         }
 
         if ((presenter == null || !presenter.isAbstract) && (text.isEmpty() || !text.isCapitalized()) && cleanLink != ":") {
@@ -96,7 +98,7 @@ class LatteLinkReference(
             }
         } else if (element is Method) {
             val name = NetteConventions.memberName(element, Role.ACTION) ?: NetteConventions.memberName(element, Role.SIGNAL) ?: element.name
-            if (!text.startsWith(name) && !text.contains(":$name") && text != "this") {
+            if (!text.startsWith(name) && !text.contains(":$name") && !text.contains("-$name") && text != "this") {
                 return false
             }
         }

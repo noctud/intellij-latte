@@ -47,7 +47,13 @@ class TemplatePresenters private constructor(private val template: LatteFile) {
         return null
     }
 
+    /** A signal of a presenter, `delete`, or of one of its components, `menu-toggle`. */
     fun resolveSignal(presenter: PhpClass?, signal: String): Method? {
+        if (signal.contains('-')) {
+            val path = signal.split('-')
+            return componentClass(path.dropLast(1))?.let { NetteConventions.findMember(it, Role.SIGNAL, path.last()) }
+        }
+
         for (candidate in presenter?.let(::listOf) ?: matchingPresenters(null, false)) {
             NetteConventions.findMember(candidate, Role.SIGNAL, signal)?.let { return it }
         }
@@ -178,13 +184,10 @@ class TemplatePresenters private constructor(private val template: LatteFile) {
 
     /**
      * The presenters a name can mean, the likeliest first, or the ones the template can belong to
-     * when there is no name. Of several presenters of the same name, the one nearest the template
-     * comes first.
-     *
-     * The presenters named before it in the link are meant to pick between presenters of the same
-     * name in different modules. They do not yet (pinned by LinkResolveTest).
+     * when there is no name. Of several presenters of the same name, the one in the namespace of
+     * the most modules named before it in the link comes first, `Admin` in `:Admin:Dashboard:`,
+     * and of those the one nearest the template.
      */
-    @Suppress("UNUSED_PARAMETER")
     private fun matchingPresenters(name: String?, preferAbstract: Boolean, previousPresenters: List<String> = emptyList()): List<PhpClass> {
         val names = if (name != null) listOf(name) else NetteConventions.templatePresenterNames(template)
         val presenters = presenters()
@@ -203,7 +206,9 @@ class TemplatePresenters private constructor(private val template: LatteFile) {
             }
         }
 
-        val ordered = candidates.values.sortedBy { distance(templatePath, it) }
+        val ordered = candidates.values.sortedWith(
+            compareByDescending<PhpClass> { modulesInNamespace(it, previousPresenters) }.thenBy { distance(templatePath, it) }
+        )
         if (preferAbstract) {
             val abstracts = ordered.filter { it.isAbstract }
             if (abstracts.isNotEmpty()) {
@@ -212,6 +217,12 @@ class TemplatePresenters private constructor(private val template: LatteFile) {
         }
 
         return ordered
+    }
+
+    /** How many of the modules are a part of the presenter's namespace. */
+    private fun modulesInNamespace(presenter: PhpClass, modules: List<String>): Int {
+        val namespace = presenter.namespaceName.split("\\")
+        return modules.count { module -> namespace.any { it.equals(module, ignoreCase = true) } }
     }
 
     /** How far apart the two directories are, counted in characters. */

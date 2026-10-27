@@ -38,6 +38,9 @@ object NetteConventions {
     /** A presenter method named like a signal that Nette calls itself. */
     private const val INVALID_LINK_HANDLER = "handleInvalidLink"
 
+    /** What separates the presenter from the action in a template's name, `Product.edit.latte`. */
+    private val TEMPLATE_NAME_SEPARATORS = listOf(".", "-", "_")
+
     private val prefixes = mapOf(
         Role.ACTION to listOf("action", "render"),
         Role.SIGNAL to listOf("handle"),
@@ -100,7 +103,7 @@ object NetteConventions {
     /**
      * Names of the presenters the template may belong to, the likeliest first: the presenter of
      * `{templateType App\UI\Product\ProductTemplate}`, then the one named after the template's
-     * directory, then after the template itself - `Product/edit.latte`, `Product-edit.latte` and
+     * directory, then after the template itself - `Product/edit.latte`, `Product.edit.latte` and
      * `Product.latte` are all `Product`.
      */
     fun templatePresenterNames(template: LatteFile): List<String> {
@@ -119,7 +122,7 @@ object NetteConventions {
         }
 
         val fileName = file.name.removeSuffix(".latte").capitalized()
-        for (separator in listOf("-", "_")) {
+        for (separator in TEMPLATE_NAME_SEPARATORS) {
             if (fileName.contains(separator)) {
                 names.add(fileName.substringBefore(separator))
             }
@@ -134,13 +137,13 @@ object NetteConventions {
 
     /**
      * Names of the actions the template may be rendered by, the likeliest first: `edit.latte` and
-     * `Product-edit.latte` are `edit`, and `default` is always a candidate.
+     * `Product.edit.latte` are `edit`, and `default` is always a candidate.
      */
     fun templateActionNames(template: LatteFile): List<String> {
         val fileName = template.originalFile.name.removeSuffix(".latte")
         val names = mutableListOf<String>()
 
-        for (separator in listOf("-", "_")) {
+        for (separator in TEMPLATE_NAME_SEPARATORS) {
             val action = fileName.split(separator).getOrNull(1)
             if (!action.isNullOrEmpty()) {
                 names.add(action)
