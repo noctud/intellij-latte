@@ -1,0 +1,5 @@
+{=match ($status) {
+	App\Status::Active => ($label|upper),
+	App\Status::Inactive => "inactive",
+	default => null,
+}}

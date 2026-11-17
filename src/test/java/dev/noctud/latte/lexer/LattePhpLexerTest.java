@@ -694,4 +694,96 @@ public class LattePhpLexerTest {
 			Pair.create(T_MACRO_TAG_CLOSE, "}"),
 		});
 	}
+
+	/**
+	 * A match whose arms are on lines of their own. The braces used to be paired only within one
+	 * line, so the one before the closing brace of the tag was taken for the end of the tag.
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testMultiLineMatch() throws Exception {
+		Lexer lexer = new LatteLexer();
+		lexer.start("{=match ($status) {\n\tApp\\Status::Active => 'a',\n\tdefault => 'b',\n}}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_SHORTNAME, "="),
+			Pair.create(T_PHP_KEYWORD, "match"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_LEFT_NORMAL_BRACE, "("),
+			Pair.create(T_MACRO_ARGS_VAR, "$status"),
+			Pair.create(T_PHP_RIGHT_NORMAL_BRACE, ")"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_LEFT_CURLY_BRACE, "{"),
+			Pair.create(T_WHITESPACE, "\n\t"),
+			Pair.create(T_PHP_NAMESPACE_REFERENCE, "App"),
+			Pair.create(T_PHP_NAMESPACE_RESOLUTION, "\\"),
+			Pair.create(T_PHP_IDENTIFIER, "Status"),
+			Pair.create(T_PHP_DOUBLE_COLON, "::"),
+			Pair.create(T_PHP_IDENTIFIER, "Active"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_DOUBLE_ARROW, "=>"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_SINGLE_QUOTE_LEFT, "'"),
+			Pair.create(T_MACRO_ARGS_STRING, "a"),
+			Pair.create(T_PHP_SINGLE_QUOTE_RIGHT, "'"),
+			Pair.create(T_MACRO_ARGS, ","),
+			Pair.create(T_WHITESPACE, "\n\t"),
+			Pair.create(T_PHP_KEYWORD, "default"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_MACRO_ARGS, "=>"),
+			Pair.create(T_WHITESPACE, " "),
+			Pair.create(T_PHP_SINGLE_QUOTE_LEFT, "'"),
+			Pair.create(T_MACRO_ARGS_STRING, "b"),
+			Pair.create(T_PHP_SINGLE_QUOTE_RIGHT, "'"),
+			Pair.create(T_MACRO_ARGS, ","),
+			Pair.create(T_WHITESPACE, "\n"),
+			Pair.create(T_PHP_RIGHT_CURLY_BRACE, "}"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
+
+	/** match is reserved for the expression only where a function name could stand, not after -> or ::. */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testMatchAsMethodName() throws Exception {
+		Lexer lexer = new LatteLexer();
+
+		lexer.start("{$re->match($s)}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$re"),
+			Pair.create(T_PHP_OBJECT_OPERATOR, "->"),
+			Pair.create(T_PHP_IDENTIFIER, "match"),
+			Pair.create(T_PHP_LEFT_NORMAL_BRACE, "("),
+			Pair.create(T_MACRO_ARGS_VAR, "$s"),
+			Pair.create(T_PHP_RIGHT_NORMAL_BRACE, ")"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+
+		lexer.start("{\\Nette\\Utils\\Strings::match($s)}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_PHP_NAMESPACE_RESOLUTION, "\\"),
+			Pair.create(T_PHP_NAMESPACE_REFERENCE, "Nette"),
+			Pair.create(T_PHP_NAMESPACE_RESOLUTION, "\\"),
+			Pair.create(T_PHP_NAMESPACE_REFERENCE, "Utils"),
+			Pair.create(T_PHP_NAMESPACE_RESOLUTION, "\\"),
+			Pair.create(T_PHP_NAMESPACE_REFERENCE, "Strings"),
+			Pair.create(T_PHP_DOUBLE_COLON, "::"),
+			Pair.create(T_PHP_IDENTIFIER, "match"),
+			Pair.create(T_PHP_LEFT_NORMAL_BRACE, "("),
+			Pair.create(T_MACRO_ARGS_VAR, "$s"),
+			Pair.create(T_PHP_RIGHT_NORMAL_BRACE, ")"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+
+		lexer.start("{$a::CONSTANT}");
+		assertTokens(lexer, new Pair[] {
+			Pair.create(T_MACRO_OPEN_TAG_OPEN, "{"),
+			Pair.create(T_MACRO_ARGS_VAR, "$a"),
+			Pair.create(T_PHP_DOUBLE_COLON, "::"),
+			Pair.create(T_PHP_IDENTIFIER, "CONSTANT"),
+			Pair.create(T_MACRO_TAG_CLOSE, "}"),
+		});
+	}
 }
