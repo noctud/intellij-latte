@@ -135,6 +135,11 @@ public class ParserTest extends BasePsiParsingTestCase {
         doTest(true, true);
     }
 
+    @Test
+    public void testMatch() {
+        doTest(true, true);
+    }
+
 
     /**
      * Keyed items, in both places a {@code key => value} pair can appear: inside

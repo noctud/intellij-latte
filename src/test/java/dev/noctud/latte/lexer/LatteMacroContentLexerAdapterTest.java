@@ -59,6 +59,15 @@ public class LatteMacroContentLexerAdapterTest {
 				Pair.create(T_PHP_CONTENT, "function() { } "),
 		});
 
+		lexer.start("a {\n}");
+		assertTokens(lexer, new Pair[]{
+				Pair.create(T_PHP_CONTENT, "a"),
+				Pair.create(T_WHITESPACE, " "),
+				Pair.create(T_PHP_CONTENT, "{"),
+				Pair.create(T_WHITESPACE, "\n"),
+				Pair.create(T_PHP_CONTENT, "}"),
+		});
+
 		lexer.start("1");
 		assertTokens(lexer, new Pair[]{
 				Pair.create(T_PHP_CONTENT, "1"),

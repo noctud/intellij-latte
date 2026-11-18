@@ -18,6 +18,7 @@ import static dev.noctud.latte.psi.LatteTypes.*;
 %state PHP_TYPE_PART
 %state CLASS_REFERENCE
 %state CLASS_REFERENCE_TYPE
+%state MEMBER_NAME
 
 WHITE_SPACE=[ \t\r\n]+
 
@@ -68,6 +69,7 @@ AS="as"
     }
 
     "::" {
+        yybegin(MEMBER_NAME);
         return T_PHP_DOUBLE_COLON;
     }
 
@@ -76,7 +78,14 @@ AS="as"
     }
 
     ("?->" | "->") {
+        yybegin(MEMBER_NAME);
         return T_PHP_OBJECT_OPERATOR;
+    }
+
+    // PHP 8 reserves match, so match (...) is never a call of a function of that name.
+    // As a method name it is still allowed, see MEMBER_NAME.
+    "match" / {WHITE_SPACE}? "(" {
+        return T_PHP_KEYWORD;
     }
 
     "(" {
@@ -305,6 +314,24 @@ AS="as"
     "\\" {
         pushState(YYINITIAL);
         return T_PHP_NAMESPACE_RESOLUTION;
+    }
+}
+
+// Right after -> or ::, where match names a method, as in $re->match($s) or Strings::match($s).
+// Everything else is left to YYINITIAL, so ::class and the like are lexed as they always were.
+<MEMBER_NAME> {
+    "match" / {WHITE_SPACE}? "(" {
+        yybegin(YYINITIAL);
+        return T_PHP_IDENTIFIER;
+    }
+
+    {WHITE_SPACE} {
+        return T_WHITESPACE;
+    }
+
+    [^] {
+        rollbackMatch();
+        yybegin(YYINITIAL);
     }
 }
 
