@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1] - 2026-11-18
+
+### Fixed
+
+- A `match`, or a closure whose body spans several lines, reported as a syntax error
+- `match (...)` reported as an unknown function
+
 ## [1.9.0] - 2026-10-27
 
 ### Added
